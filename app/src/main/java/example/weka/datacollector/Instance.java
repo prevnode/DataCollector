@@ -29,7 +29,6 @@ public class Instance {
     public int BattVoltage = -1;
     public int BattCurrent = -1;
     public int BattTemp = -1;
-    public int BattLevelChange = -1;
     public int BattLevel = -1;
     public String Class = "Normal";
 
@@ -42,7 +41,6 @@ public class Instance {
         line.append(',');
         line.append(BattTemp);
         line.append(',');
-        line.append(BattLevelChange);
         line.append(BattLevel);
         line.append(Class);
         line.append('\n');

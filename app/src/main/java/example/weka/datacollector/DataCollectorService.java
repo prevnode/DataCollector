@@ -1,5 +1,6 @@
 package example.weka.datacollector;
 
+import android.app.AlarmManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -22,6 +23,10 @@ public class DataCollectorService extends Service implements IInstanceCreator {
     private MyReceiver mReceiver = new MyReceiver();
     private IntentFilter battFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
     private IInstanceReceiver instanceReceiver;
+    private Instance mInstance;
+    //private AlarmManager alarmManager;
+    //private PendingIntent pendingIntent;
+
 
 
     private boolean mActive;
@@ -46,18 +51,14 @@ public class DataCollectorService extends Service implements IInstanceCreator {
         // return value contains the status
         Intent batteryStatus = this.registerReceiver(null, battFilter);
 
-        // Are we charging / charged?
-        int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
-        boolean isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING
-                || status == BatteryManager.BATTERY_STATUS_FULL;
+        mInstance = new Instance();
+        mInstance.BattCurrent = BatteryManager.BATTERY_PROPERTY_CURRENT_NOW;
+        mInstance.BattLevel = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+        mInstance.BattVoltage = batteryStatus.getIntExtra(BatteryManager.EXTRA_VOLTAGE, -1);
+        mInstance.BattTemp = batteryStatus.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, -1);
 
-        boolean isFull = status == BatteryManager.BATTERY_STATUS_FULL;
-
-        // How are we charging?
-        int chargePlug = batteryStatus.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
-        boolean usbCharge = chargePlug == BatteryManager.BATTERY_PLUGGED_USB;
-        boolean acCharge = chargePlug == BatteryManager.BATTERY_PLUGGED_AC;
-        Log.d(TAG,"charging: " + usbCharge + "/n");
+        if(instanceReceiver != null)
+            instanceReceiver.receiveData(mInstance);
 
     }
 
@@ -88,6 +89,14 @@ public class DataCollectorService extends Service implements IInstanceCreator {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i("LocalService", "Received start id " + startId + ": " + intent);
+
+        /*
+        alarmManager = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
+        Intent intermediateIntent = new Intent(this, DataCollectorService.class);
+        pendingIntent = PendingIntent.getService(this,0,intermediateIntent,0);
+        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                System.currentTimeMillis() + 10000, 10000, pendingIntent);
+        */
 
         // We want this service to continue running until it is explicitly
         // stopped, so return sticky.

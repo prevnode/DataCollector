@@ -1,5 +1,7 @@
 package example.weka.datacollector;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -15,7 +17,6 @@ import android.view.View;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.content.ServiceConnection;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -26,23 +27,35 @@ public class ControlDataCollection extends ActionBarActivity implements IInstanc
 
     private boolean mRecording;
 
-    private Button mButton;
+    private Button startButton;
     private boolean mIsBound;
     private boolean mFileReadyToWrite;
     private static final String TAG = "ControlReading";
     private FileWriter dataFile;
 
 
+
+
     @Override
     public void receiveData(Instance instance){
 
+        if(!mFileReadyToWrite) {
+            Log.d(TAG, "Tried to receive data but file not ready");
+            return;
+        }
+
+        try {
+            dataFile.append(instance.toString());
+        }catch(IOException e){
+            Log.e(TAG,"receiveData : " + e.toString());
+        }
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_control_data_collection);
-        mButton =(Button)findViewById(R.id.toggleButton);
-        mButton.setText("Start");
+        startButton =(Button)findViewById(R.id.toggleButton);
+        startButton.setText("Start");
 
 
         mFileReadyToWrite = setupFileWriter();
@@ -167,15 +180,15 @@ public class ControlDataCollection extends ActionBarActivity implements IInstanc
      */
     public void toggleRecord(View view){
 
-        if(mButton == null){
+        if(startButton == null){
             Log.d(TAG,"no button ref");
             return;
         }
 
         if(mRecording)
-            mButton.setText("Start");
+            startButton.setText("Start");
         else
-            mButton.setText("Stop");
+            startButton.setText("Stop");
 
         mRecording = !mRecording;
         mBoundService.setActive(mRecording);
