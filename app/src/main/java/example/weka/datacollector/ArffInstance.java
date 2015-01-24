@@ -3,7 +3,7 @@ package example.weka.datacollector;
 /**
  * Created by lenovo on 1/21/2015.
  */
-public class Instance {
+public class ArffInstance {
 
      /*
     CPU_Usage

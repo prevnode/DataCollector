@@ -5,5 +5,5 @@ package example.weka.datacollector;
  */
 public interface IInstanceReceiver {
 
-    public void receiveData(Instance instance);
+    public void receiveData(ArffInstance arffInstance);
 }

@@ -23,134 +23,25 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class ControlDataCollection extends ActionBarActivity implements IInstanceReceiver{
+public class ControlDataCollection extends ActionBarActivity{
 
     private boolean mRecording;
 
     private Button startButton;
     private boolean mIsBound;
-    private boolean mFileReadyToWrite;
+    private PendingIntent pendingIntent;
     private static final String TAG = "ControlReading";
-    private FileWriter dataFile;
 
 
-
-
-    @Override
-    public void receiveData(Instance instance){
-
-        if(!mFileReadyToWrite) {
-            Log.d(TAG, "Tried to receive data but file not ready");
-            return;
-        }
-
-        try {
-            dataFile.append(instance.toString());
-        }catch(IOException e){
-            Log.e(TAG,"receiveData : " + e.toString());
-        }
-    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_control_data_collection);
-        startButton =(Button)findViewById(R.id.toggleButton);
-        startButton.setText("Start");
+        Intent alarmIntent = new Intent(ControlDataCollection.this, InstanceGenerator.class);
+        pendingIntent = PendingIntent.getBroadcast(ControlDataCollection.this, 0, alarmIntent, 0);
 
 
-        mFileReadyToWrite = setupFileWriter();
-        doBindService();
-
-    }
-
-    /* Checks if external storage is available for read and write */
-    private boolean isExternalStorageWritable() {
-        String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state)) {
-            return true;
-        }
-        return false;
-    }
-
-    public File getDocumentsDir(String dataDirName) {
-        // Get the directory for the user's public pictures directory.
-        File file = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), dataDirName);
-        if(file.exists()) {
-            Log.d(TAG, "Directory exists");
-            return file;
-        }
-
-        if (!file.mkdirs()) {
-            Log.e(TAG, "Directory not created");
-        }
-        return file;
-    }
-
-    private void scanDataFile(File file) {
-        MediaScannerConnection.scanFile(this,
-                new String[]{file.toString()}, null,
-                new MediaScannerConnection.OnScanCompletedListener() {
-                    public void onScanCompleted(String path, Uri uri) {
-                        Log.i("ExternalStorage", "Scanned " + path + ":");
-                        Log.i("ExternalStorage", "-> uri=" + uri);
-                    }
-                });
-    }
-
-    private boolean setupFileWriter(){
-        if(!isExternalStorageWritable()){
-            Log.e(TAG, "External Storage unavailable");
-            return false;
-        }
-
-        File dir = getDocumentsDir("arff");
-        File file = new File(dir,"data.arff");
-
-        try{
-            dataFile = new FileWriter(file);
-        }catch(IOException e){
-            Log.e(TAG, e.toString());
-        }
-        return true;
-    }
-
-    /**
-     * Writes the arff header info to the file. Current version doesn't have
-     * anything to write. DO NOT use until creating a source for the header text
-     */
-    private void writeHeader(){
-        if(!isExternalStorageWritable()){
-            Log.e(TAG, "External Storage unavailable");
-            return;
-        }
-
-        try {
-            FileWriter outputStream;
-
-            File dir = getDocumentsDir("arff");
-            File file = new File(dir,"data.arff");
-            if( file.exists() ){
-                Log.d(TAG, "accel exists");
-            }
-            else{
-                file.createNewFile();
-                Log.d(TAG, "accel created");
-            }
-            outputStream =  new FileWriter(file); //openFileOutput("accelARFF", Context.MODE_WORLD_READABLE);
-            if(outputStream == null)
-                throw new IOException("wtf");
-
-            outputStream.close();
-            scanDataFile(file);
-            Toast.makeText(getBaseContext(),"file saved",
-                    Toast.LENGTH_SHORT).show();
-
-        }catch (Exception e){
-            Log.e(TAG, e.toString() + " WriterHeader()" );
-            return;
-        }
-
+        //doBindService();
     }
 
     @Override
@@ -173,6 +64,20 @@ public class ControlDataCollection extends ActionBarActivity implements IInstanc
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void startCollection(View view) {
+        AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        int interval = 10000;
+
+        manager.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
+        Toast.makeText(this, "Alarm Set", Toast.LENGTH_SHORT).show();
+    }
+
+    public void cancelCollection(View view) {
+        AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        manager.cancel(pendingIntent);
+        Toast.makeText(this, "Alarm Canceled", Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -208,8 +113,6 @@ public class ControlDataCollection extends ActionBarActivity implements IInstanc
             // Tell the user about this for our demo.
             Toast.makeText(ControlDataCollection.this, R.string.local_service_connected,
                     Toast.LENGTH_SHORT).show();
-
-            mBoundService.RegisterReceiver(ControlDataCollection.this);
         }
 
         public void onServiceDisconnected(ComponentName className) {

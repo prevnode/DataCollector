@@ -12,12 +12,21 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Button"
-        android:id="@+id/toggleButton"
+        android:text="StartDataCollection"
+        android:id="@+id/startButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="63dp"
         android:layout_below="@+id/textView"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="67dp"
-        android:onClick="toggleRecord" />
+        android:onClick="startCollection" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="EndDataCollection"
+        android:id="@+id/endButton"
+        android:layout_marginTop="59dp"
+        android:layout_below="@+id/startButton"
+        android:layout_centerHorizontal="true"
+        android:onClick="cancelCollection" />
 
 </RelativeLayout>
