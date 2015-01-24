@@ -52,7 +52,7 @@ public class DataCollectorService extends Service implements IInstanceCreator {
 
         mArffInstance = new ArffInstance();
         mArffInstance.BattCurrent = BatteryManager.BATTERY_PROPERTY_CURRENT_NOW;
-        mArffInstance.BattLevel = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+        mArffInstance.BattPercentLevel = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
         mArffInstance.BattVoltage = batteryStatus.getIntExtra(BatteryManager.EXTRA_VOLTAGE, -1);
         mArffInstance.BattTemp = batteryStatus.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, -1);
 

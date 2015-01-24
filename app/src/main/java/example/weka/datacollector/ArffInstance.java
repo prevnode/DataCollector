@@ -5,14 +5,14 @@ package example.weka.datacollector;
  */
 public class ArffInstance {
 
-     /*
-    CPU_Usage
-    Load_Avg_1_min
-    Load_Avg_5_min
-    Load_Avg_15_min
-    Runnable_Entities
-    Total_Entities
-    */
+
+    //CPU_Usage
+    int Load_Avg_1_min;
+    int Load_Avg_5_min;
+    int Load_Avg_15_min;
+    int Runnable_Entities;
+    int Total_Entities;
+
 
     /*
     Network:
@@ -29,8 +29,8 @@ public class ArffInstance {
     public int BattVoltage = -1;
     public int BattCurrent = -1;
     public int BattTemp = -1;
-    public int BattLevel = -1;
-    public String Class = "Normal";
+    public float BattPercentLevel = -1;
+    public String Class = new String();
 
     @Override
     public String toString(){
@@ -41,7 +41,8 @@ public class ArffInstance {
         line.append(',');
         line.append(BattTemp);
         line.append(',');
-        line.append(BattLevel);
+        line.append(BattPercentLevel);
+        line.append(',');
         line.append(Class);
         line.append('\n');
         return line.toString();
