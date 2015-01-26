@@ -13,6 +13,12 @@ public class ArffInstance {
     int Runnable_Entities;
     int Total_Entities;
 
+    //Network
+    public long TxLocalPacketDelta;
+    public long RxLocalPacketDelta;
+    public long TxMobilePacketDelta;
+    public long RxMobilePacketDelta;
+
 
     /*
     Network:
@@ -44,6 +50,9 @@ public class ArffInstance {
         line.append(BattPercentLevel);
         line.append(',');
         line.append(Class);
+        line.append(TxLocalPacketDelta);
+        line.append(',');
+        line.append(RxLocalPacketDelta);
         line.append('\n');
         return line.toString();
     }

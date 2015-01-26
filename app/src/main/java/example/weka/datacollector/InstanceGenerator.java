@@ -10,12 +10,14 @@ import android.os.BatteryManager;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
+import android.net.TrafficStats;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+
 
 public class InstanceGenerator extends BroadcastReceiver {
 
@@ -26,6 +28,13 @@ public class InstanceGenerator extends BroadcastReceiver {
     private FileWriter fileWriter;
     private ArffInstance mArffInstance = new ArffInstance();
 
+    //Set these variables first time app is loaded
+    private static long lastTxPacketSample = TrafficStats.getTotalTxPackets();
+    private static long lastRxPacketSample = TrafficStats.getTotalRxPackets();
+    private static long lastTxMobilePacketSample = TrafficStats.getMobileTxPackets();
+    private static long lastRxMobilePacketSample = TrafficStats.getMobileRxPackets();
+
+
     public InstanceGenerator() {
     }
 
@@ -34,8 +43,9 @@ public class InstanceGenerator extends BroadcastReceiver {
 
         Toast.makeText(context, "Alarm Received", Toast.LENGTH_SHORT).show();
 
-        readBatt(context);
+        //readBatt(context);
         //readCPU();
+        readNetwork();
 
         mFileReadyToWrite = setupFileWriter();
         if(!mFileReadyToWrite) {
@@ -111,6 +121,25 @@ public class InstanceGenerator extends BroadcastReceiver {
         */
 
         mArffInstance.Class = cpuData;
+    }
+
+    private void readNetwork(){
+
+        long txTotalPackets = TrafficStats.getTotalTxPackets();
+        long rxTotalPackets = TrafficStats.getTotalRxPackets();
+        long txMobilePackets = TrafficStats.getMobileTxPackets();
+        long rxMobilePackets = TrafficStats.getMobileRxPackets();
+
+        //Delta is difference between current and last counts
+        mArffInstance.TxLocalPacketDelta = txTotalPackets - (lastTxPacketSample - txMobilePackets);
+        mArffInstance.RxLocalPacketDelta = rxTotalPackets - (lastRxPacketSample - rxMobilePackets);
+        //mArffInstance.TxMobilePacketDelta =
+
+        //Update last samples
+        lastTxPacketSample = txTotalPackets;
+        lastRxPacketSample = rxTotalPackets;
+
+
     }
 
     private void readBatt(Context context){
