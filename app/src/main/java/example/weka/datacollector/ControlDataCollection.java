@@ -30,7 +30,7 @@ public class ControlDataCollection extends ActionBarActivity{
     private Button startButton;
     private boolean mIsBound;
     private PendingIntent pendingIntent;
-    private static final String TAG = "ControlReading";
+    private static final String TAG = "ControlCollection";
 
 
     @Override
@@ -41,7 +41,7 @@ public class ControlDataCollection extends ActionBarActivity{
         pendingIntent = PendingIntent.getBroadcast(ControlDataCollection.this, 0, alarmIntent, 0);
 
 
-        //doBindService();
+        //doBindService(); //Work is now handled in a broadcaster receiver listening for alarms
     }
 
     @Override

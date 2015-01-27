@@ -28,11 +28,11 @@ public class ArffInstance {
 
 
     //CPU_Usage
-    int Load_Avg_1_min;
-    int Load_Avg_5_min;
-    int Load_Avg_15_min;
-    int Runnable_Entities;
-    int Total_Entities;
+    float Load_Avg_1_min = -4;
+    float Load_Avg_5_min = -4;
+    float Load_Avg_15_min = -4;
+    int Runnable_Entities = -4;
+    int Total_Entities = -4;
 
     public String Class;
 
@@ -66,6 +66,12 @@ public class ArffInstance {
         line.append(Memory_Available);
         line.append(',');
         line.append(Memory_Percentage);
+        line.append(',');
+        line.append(Load_Avg_1_min);
+        line.append(',');
+        line.append(Load_Avg_5_min);
+        line.append(',');
+        line.append(Load_Avg_15_min);
         line.append(',');
         line.append(Class);
         line.append('\n');

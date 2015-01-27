@@ -60,9 +60,9 @@ public class InstanceGenerator extends BroadcastReceiver {
         }
 
         //readBatt(context);
-        //readCPU();
+        readCPU();
         //readNetwork();
-        readMem();
+        //readMem();
 
         try {
             fileWriter.append(mArffInstance.toString());
@@ -107,30 +107,14 @@ public class InstanceGenerator extends BroadcastReceiver {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        String[] tokens = cpuData.split(" ");
+        mArffInstance.Load_Avg_1_min = Float.parseFloat(tokens[0]);
+        mArffInstance.Load_Avg_5_min = Float.parseFloat(tokens[1]);
+        mArffInstance.Load_Avg_15_min = Float.parseFloat(tokens[2]);
 
 
-        /*
-        try {
+        //mArffInstance.Class = cpuData;
 
-            ProcessBuilder pb = new ProcessBuilder("adb", "uptime");
-            Process pc = pb.start();
-            BufferedReader in = new BufferedReader(new InputStreamReader(pc.getInputStream()));
-            pc.waitFor();
-            StringBuilder log=new StringBuilder();
-            String line;
-            while ((line = in.readLine()) != null) {
-                Log.d(TAG, "read line");
-                log.append(line + "\n");
-            }
-
-            cpuData = log.toString();
-
-        }catch(Exception e) {
-            Log.e(TAG, e.toString());
-        }
-        */
-
-        mArffInstance.Class = cpuData;
     }
 
     private void readNetwork(){
