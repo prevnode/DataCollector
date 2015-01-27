@@ -29,10 +29,14 @@ public class InstanceGenerator extends BroadcastReceiver {
     private ArffInstance mArffInstance = new ArffInstance();
 
     //Set these variables first time app is loaded
-    private static long lastTxPacketSample = TrafficStats.getTotalTxPackets();
-    private static long lastRxPacketSample = TrafficStats.getTotalRxPackets();
+    private static long lastTotalTxPacketSample = TrafficStats.getTotalTxPackets();
+    private static long lastTotalTxByteSample = TrafficStats.getTotalTxBytes();
+    private static long lastTotalRxPacketSample = TrafficStats.getTotalRxPackets();
+    private static long lastTotalRxByteSample = TrafficStats.getTotalRxBytes();
     private static long lastTxMobilePacketSample = TrafficStats.getMobileTxPackets();
+    private static long lastTxMobileByteSample = TrafficStats.getMobileTxBytes();
     private static long lastRxMobilePacketSample = TrafficStats.getMobileRxPackets();
+    private static long lastRxMobileByteSample = TrafficStats.getMobileRxBytes();
 
 
     public InstanceGenerator() {
@@ -126,19 +130,34 @@ public class InstanceGenerator extends BroadcastReceiver {
     private void readNetwork(){
 
         long txTotalPackets = TrafficStats.getTotalTxPackets();
+        long txTotalBytes = TrafficStats.getTotalTxBytes();
         long rxTotalPackets = TrafficStats.getTotalRxPackets();
+        long rxTotalBytes = TrafficStats.getTotalRxBytes();
         long txMobilePackets = TrafficStats.getMobileTxPackets();
+        long txMobleBytes = TrafficStats.getMobileTxBytes();
         long rxMobilePackets = TrafficStats.getMobileRxPackets();
+        long rxMobileBytes = TrafficStats.getMobileRxBytes();
+
 
         //Delta is difference between current and last counts
-        mArffInstance.TxLocalPacketDelta = txTotalPackets - (lastTxPacketSample - txMobilePackets);
-        mArffInstance.RxLocalPacketDelta = rxTotalPackets - (lastRxPacketSample - rxMobilePackets);
-        //mArffInstance.TxMobilePacketDelta =
+        mArffInstance.Local_TX_Packet_Delta = (txTotalPackets - txMobilePackets) - lastTotalTxPacketSample;
+        mArffInstance.Local_TX_Byte_Delta = (txTotalBytes - txMobleBytes) - lastTotalTxByteSample;
+        mArffInstance.Local_RX_Packet_Delta = (rxTotalPackets - rxMobilePackets) - lastTotalRxPacketSample;
+        mArffInstance.Local_RX_Byte_Delta = (rxTotalBytes - rxMobileBytes) - lastTotalRxByteSample;
+        mArffInstance.Mobile_TX_Packet_Delta = txMobilePackets - lastTxMobilePacketSample;
+        mArffInstance.Mobile_TX_Byte_Delta = txMobleBytes - lastTxMobileByteSample;
+        mArffInstance.Mobile_RX_Packet_Delta = rxMobilePackets - lastRxMobilePacketSample;
+        mArffInstance.Mobile_RX_Byte_Delta = rxMobileBytes - lastRxMobileByteSample;
 
         //Update last samples
-        lastTxPacketSample = txTotalPackets;
-        lastRxPacketSample = rxTotalPackets;
-
+        lastTotalTxPacketSample     = txTotalPackets;
+        lastTotalRxByteSample       = txTotalBytes;
+        lastTotalRxPacketSample     = rxTotalPackets;
+        lastTotalRxByteSample       = rxTotalBytes;
+        lastTxMobilePacketSample    = txMobilePackets;
+        lastTxMobileByteSample      = txMobleBytes;
+        lastRxMobilePacketSample    = rxMobilePackets;
+        lastRxMobileByteSample      = rxMobileBytes;
 
     }
 
@@ -154,13 +173,13 @@ public class InstanceGenerator extends BroadcastReceiver {
             return;
         }
 
-        mArffInstance.BattCurrent = BatteryManager.BATTERY_PROPERTY_CURRENT_NOW;
+        mArffInstance.Batt_Current = BatteryManager.BATTERY_PROPERTY_CURRENT_NOW;
         mArffInstance.BattPercentLevel =
                 batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1) /
                         batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
 
-        mArffInstance.BattVoltage = batteryStatus.getIntExtra(BatteryManager.EXTRA_VOLTAGE, -1);
-        mArffInstance.BattTemp = batteryStatus.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, -1);
+        mArffInstance.Batt_Voltage = batteryStatus.getIntExtra(BatteryManager.EXTRA_VOLTAGE, -1);
+        mArffInstance.Batt_Temp = batteryStatus.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, -1);
 
     }
 
