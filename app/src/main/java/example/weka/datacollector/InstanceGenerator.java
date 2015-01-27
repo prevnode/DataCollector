@@ -1,5 +1,7 @@
 package example.weka.datacollector;
 
+import android.app.ActivityManager;
+import android.app.ActivityManager.MemoryInfo;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -21,12 +23,15 @@ import java.io.InputStreamReader;
 
 public class InstanceGenerator extends BroadcastReceiver {
 
+    private final long BYTES_IN_MEG = 1048576L;
     private final String TAG = "InstanceGenerator";
     private boolean mFileReadyToWrite;
     private File file;
     private IntentFilter battFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
     private FileWriter fileWriter;
     private ArffInstance mArffInstance = new ArffInstance();
+
+    private Context appContext;
 
     //Set these variables first time app is loaded
     private static long lastTotalTxPacketSample = TrafficStats.getTotalTxPackets();
@@ -45,17 +50,19 @@ public class InstanceGenerator extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
+        appContext = context.getApplicationContext();
         Toast.makeText(context, "Alarm Received", Toast.LENGTH_SHORT).show();
-
-        //readBatt(context);
-        //readCPU();
-        readNetwork();
 
         mFileReadyToWrite = setupFileWriter();
         if(!mFileReadyToWrite) {
-            Log.d(TAG, "File Not ready");
+            Log.e(TAG, "File Not ready");
             return;
         }
+
+        //readBatt(context);
+        //readCPU();
+        //readNetwork();
+        readMem();
 
         try {
             fileWriter.append(mArffInstance.toString());
@@ -69,19 +76,18 @@ public class InstanceGenerator extends BroadcastReceiver {
     }
 
     private void readMem(){
-        if(mArffInstance == null){
-            Log.e(TAG, "Unable to get instance");
-            return;
-        }
+        MemoryInfo mi = new MemoryInfo();
+        ActivityManager activityManager = (ActivityManager)appContext.getSystemService(Context.ACTIVITY_SERVICE);
+        activityManager.getMemoryInfo(mi);
 
-
+        mArffInstance.Memory_Available = mi.availMem / BYTES_IN_MEG;
+        mArffInstance.Memory_Percentage = (float)mi.availMem / (float)mi.totalMem;
+        int bob = 0;
     }
 
+
+
     private void readCPU(){
-        if(mArffInstance == null){
-            Log.e(TAG, "Unable to get instance");
-            return;
-        }
 
         String cpuData = "No data from top";
 
@@ -165,13 +171,8 @@ public class InstanceGenerator extends BroadcastReceiver {
 
         // Intent is sticky so using null as receiver works fine
         // return value contains the status
-        Intent batteryStatus = context.getApplicationContext().registerReceiver(null, battFilter);
+        Intent batteryStatus = appContext.registerReceiver(null, battFilter);
 
-
-        if(mArffInstance == null){
-            Log.e(TAG, "Unable to get instance");
-            return;
-        }
 
         mArffInstance.Batt_Current = BatteryManager.BATTERY_PROPERTY_CURRENT_NOW;
         mArffInstance.BattPercentLevel =
@@ -227,7 +228,7 @@ public class InstanceGenerator extends BroadcastReceiver {
     }
 
     private void scanDataFile(File file, Context context) {
-        MediaScannerConnection.scanFile(context.getApplicationContext(), new String[]{file.toString()}, null, new MediaScannerConnection.OnScanCompletedListener() {
+        MediaScannerConnection.scanFile(appContext, new String[]{file.toString()}, null, new MediaScannerConnection.OnScanCompletedListener() {
                     public void onScanCompleted(String path, Uri uri) {Log.i("ExternalStorage", "Scanned " + path + ":");
                         Log.i("ExternalStorage", "-> uri=" + uri);
                     }

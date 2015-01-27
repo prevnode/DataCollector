@@ -5,6 +5,27 @@ package example.weka.datacollector;
  */
 public class ArffInstance {
 
+    //Battery
+    public int Batt_Voltage = -1;
+    public int Batt_Current = -1;
+    public int Batt_Temp = -1;
+    public float BattPercentLevel = -1;
+
+
+    //Network statics are guaranteed to be monotonic so deltas should never be negative
+    public long Local_TX_Packet_Delta = -2;
+    public long Local_TX_Byte_Delta = -2;
+    public long Local_RX_Packet_Delta = -2;
+    public long Local_RX_Byte_Delta = -2;
+    public long Mobile_TX_Packet_Delta = -2;
+    public long Mobile_TX_Byte_Delta = -2;
+    public long Mobile_RX_Packet_Delta = -2;
+    public long Mobile_RX_Byte_Delta = -2;
+
+    //Memory Usage
+    public long Memory_Available = -3;  // in Megabytes
+    public float Memory_Percentage = -3;
+
 
     //CPU_Usage
     int Load_Avg_1_min;
@@ -13,35 +34,7 @@ public class ArffInstance {
     int Runnable_Entities;
     int Total_Entities;
 
-    //Network statics are guaranteed to be monotonic so deltas should never be negative
-    public long Local_TX_Packet_Delta = -1;
-    public long Local_TX_Byte_Delta = -1;
-    public long Local_RX_Packet_Delta = -1;
-    public long Local_RX_Byte_Delta = -1;
-    public long Mobile_TX_Packet_Delta = -1;
-    public long Mobile_TX_Byte_Delta = -1;
-    public long Mobile_RX_Packet_Delta = -1;
-    public long Mobile_RX_Byte_Delta = -1;
-
-
-    /*
-    Network:
-	Local_TX_Packets
-	Local_TX_Bytes
-	Local_RX_Packets
-	Local_RX_Bytes
-	Wifi_TX_Packets
-	Wifi_TX_Bytes
-	Wifi_RX_Packets
-	Wifi_RX_Bytes
-    */
-
-    //Battery
-    public int Batt_Voltage = -1;
-    public int Batt_Current = -1;
-    public int Batt_Temp = -1;
-    public float BattPercentLevel = -1;
-    public String Class = new String();
+    public String Class;
 
     @Override
     public String toString(){
@@ -69,6 +62,10 @@ public class ArffInstance {
         line.append(Mobile_RX_Packet_Delta);
         line.append(',');
         line.append(Mobile_RX_Byte_Delta);
+        line.append(',');
+        line.append(Memory_Available);
+        line.append(',');
+        line.append(Memory_Percentage);
         line.append(',');
         line.append(Class);
         line.append('\n');
