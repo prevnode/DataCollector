@@ -31,7 +31,7 @@ public class ArffInstance {
     float Load_Avg_1_min = -4;
     float Load_Avg_5_min = -4;
     float Load_Avg_15_min = -4;
-    int Runnable_Entities = -4;
+    int Running_Entities = -4;
     int Total_Entities = -4;
 
     public String Class;
@@ -72,6 +72,10 @@ public class ArffInstance {
         line.append(Load_Avg_5_min);
         line.append(',');
         line.append(Load_Avg_15_min);
+        line.append(',');
+        line.append(Running_Entities);
+        line.append(',');
+        line.append(Total_Entities);
         line.append(',');
         line.append(Class);
         line.append('\n');

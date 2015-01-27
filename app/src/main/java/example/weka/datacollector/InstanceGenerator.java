@@ -63,6 +63,7 @@ public class InstanceGenerator extends BroadcastReceiver {
         readCPU();
         //readNetwork();
         //readMem();
+        mArffInstance.Class = "Normal";
 
         try {
             fileWriter.append(mArffInstance.toString());
@@ -92,7 +93,7 @@ public class InstanceGenerator extends BroadcastReceiver {
         String cpuData = "No data from top";
 
         try {
-            Process process = Runtime.getRuntime().exec("cat /proc/loadavg"); //"uptime top -n 1 -d 1"
+            Process process = Runtime.getRuntime().exec("cat /proc/loadavg");
             BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
             StringBuilder log=new StringBuilder();
@@ -111,9 +112,13 @@ public class InstanceGenerator extends BroadcastReceiver {
         mArffInstance.Load_Avg_1_min = Float.parseFloat(tokens[0]);
         mArffInstance.Load_Avg_5_min = Float.parseFloat(tokens[1]);
         mArffInstance.Load_Avg_15_min = Float.parseFloat(tokens[2]);
+        tokens = tokens[3].split("/");
+        mArffInstance.Running_Entities = Integer.parseInt(tokens[0]);
+        mArffInstance.Total_Entities = Integer.parseInt(tokens[1]);
 
 
-        //mArffInstance.Class = cpuData;
+
+
 
     }
 
