@@ -5,9 +5,6 @@ import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.media.MediaScannerConnection;
-import android.net.Uri;
-import android.os.Environment;
 import android.os.IBinder;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -18,10 +15,6 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.content.ServiceConnection;
 import android.widget.Toast;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 
 public class ControlDataCollection extends ActionBarActivity{
 
@@ -37,7 +30,7 @@ public class ControlDataCollection extends ActionBarActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_control_data_collection);
-        Intent alarmIntent = new Intent(ControlDataCollection.this, InstanceGenerator.class);
+        Intent alarmIntent = new Intent(ControlDataCollection.this, DataCollector.class);
         pendingIntent = PendingIntent.getBroadcast(ControlDataCollection.this, 0, alarmIntent, 0);
 
 
