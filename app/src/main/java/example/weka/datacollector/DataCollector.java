@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import weka.core.DenseInstance;
+import weka.core.Instance;
+import weka.core.Instances;
 
 /**
  * Upon receiving a system alarm this class reads all reads all relevant data from the phone.
@@ -35,7 +37,9 @@ public class DataCollector extends BroadcastReceiver {
     private File file;
     private IntentFilter battFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
     private FileWriter fileWriter;
-    private ArffInstance mArffInstance = new ArffInstance();
+    private ArffInstance _arffInstance = new ArffInstance();
+    private static InstanceGenerator _instanceGenerator = new InstanceGenerator();
+    private final Instances _dataSet = _instanceGenerator.getEmptyInstances();
 
     private Context appContext;
 
@@ -63,12 +67,14 @@ public class DataCollector extends BroadcastReceiver {
         readCPU();
         readNetwork();
         readMem();
-        mArffInstance.Class = "Normal";
+        _arffInstance.Class = "Normal";
 
         if(writeArff)
             writeToFile();
+        else{
+            _dataSet.add(createInstance() );
+        }
 
-        //createInstance();
 
 
 
@@ -77,10 +83,9 @@ public class DataCollector extends BroadcastReceiver {
 
 
     private DenseInstance createInstance(){
-        //DenseInstance instance = new DenseInstance(1,)
 
+        return new DenseInstance(1, _arffInstance.toValues());
 
-        return  new DenseInstance(3);
     }
 
 
@@ -93,7 +98,7 @@ public class DataCollector extends BroadcastReceiver {
         }
 
         try {
-            fileWriter.append(mArffInstance.toString());
+            fileWriter.append(_arffInstance.toString());
             fileWriter.close();
         }catch(IOException e){
             Log.e(TAG,"receiveAlarm : " + e.toString());
@@ -102,7 +107,7 @@ public class DataCollector extends BroadcastReceiver {
 
 
         scanDataFile(file,appContext);
-        Log.d(TAG, "Wrote " + mArffInstance.BattPercentLevel + "...");
+        Log.d(TAG, "Wrote " + _arffInstance.BattPercentLevel + "...");
         return  true;
 
 
@@ -114,8 +119,8 @@ public class DataCollector extends BroadcastReceiver {
         ActivityManager activityManager = (ActivityManager)appContext.getSystemService(Context.ACTIVITY_SERVICE);
         activityManager.getMemoryInfo(mi);
 
-        mArffInstance.Memory_Available = mi.availMem / BYTES_IN_MEG;
-        mArffInstance.Memory_Percentage = (float)mi.availMem / (float)mi.totalMem;
+        _arffInstance.Memory_Available = mi.availMem / BYTES_IN_MEG;
+        _arffInstance.Memory_Percentage = (float)mi.availMem / (float)mi.totalMem;
     }
 
 
@@ -141,12 +146,12 @@ public class DataCollector extends BroadcastReceiver {
             e.printStackTrace();
         }
         String[] tokens = cpuData.split(" ");
-        mArffInstance.Load_Avg_1_min = Float.parseFloat(tokens[0]);
-        mArffInstance.Load_Avg_5_min = Float.parseFloat(tokens[1]);
-        mArffInstance.Load_Avg_15_min = Float.parseFloat(tokens[2]);
+        _arffInstance.Load_Avg_1_min = Float.parseFloat(tokens[0]);
+        _arffInstance.Load_Avg_5_min = Float.parseFloat(tokens[1]);
+        _arffInstance.Load_Avg_15_min = Float.parseFloat(tokens[2]);
         tokens = tokens[3].split("/");
-        mArffInstance.Running_Entities = Integer.parseInt(tokens[0]);
-        mArffInstance.Total_Entities = Integer.parseInt(tokens[1]);
+        _arffInstance.Running_Entities = Integer.parseInt(tokens[0]);
+        _arffInstance.Total_Entities = Integer.parseInt(tokens[1]);
 
 
 
@@ -167,14 +172,14 @@ public class DataCollector extends BroadcastReceiver {
 
 
         //Delta is difference between current and last counts
-        mArffInstance.Local_TX_Packet_Delta = (txTotalPackets - txMobilePackets) - lastTotalTxPacketSample;
-        mArffInstance.Local_TX_Byte_Delta = (txTotalBytes - txMobleBytes) - lastTotalTxByteSample;
-        mArffInstance.Local_RX_Packet_Delta = (rxTotalPackets - rxMobilePackets) - lastTotalRxPacketSample;
-        mArffInstance.Local_RX_Byte_Delta = (rxTotalBytes - rxMobileBytes) - lastTotalRxByteSample;
-        mArffInstance.Mobile_TX_Packet_Delta = txMobilePackets - lastTxMobilePacketSample;
-        mArffInstance.Mobile_TX_Byte_Delta = txMobleBytes - lastTxMobileByteSample;
-        mArffInstance.Mobile_RX_Packet_Delta = rxMobilePackets - lastRxMobilePacketSample;
-        mArffInstance.Mobile_RX_Byte_Delta = rxMobileBytes - lastRxMobileByteSample;
+        _arffInstance.Local_TX_Packet_Delta = (txTotalPackets - txMobilePackets) - lastTotalTxPacketSample;
+        _arffInstance.Local_TX_Byte_Delta = (txTotalBytes - txMobleBytes) - lastTotalTxByteSample;
+        _arffInstance.Local_RX_Packet_Delta = (rxTotalPackets - rxMobilePackets) - lastTotalRxPacketSample;
+        _arffInstance.Local_RX_Byte_Delta = (rxTotalBytes - rxMobileBytes) - lastTotalRxByteSample;
+        _arffInstance.Mobile_TX_Packet_Delta = txMobilePackets - lastTxMobilePacketSample;
+        _arffInstance.Mobile_TX_Byte_Delta = txMobleBytes - lastTxMobileByteSample;
+        _arffInstance.Mobile_RX_Packet_Delta = rxMobilePackets - lastRxMobilePacketSample;
+        _arffInstance.Mobile_RX_Byte_Delta = rxMobileBytes - lastRxMobileByteSample;
 
         //Update last samples
         lastTotalTxPacketSample     = txTotalPackets;
@@ -195,13 +200,13 @@ public class DataCollector extends BroadcastReceiver {
         Intent batteryStatus = appContext.registerReceiver(null, battFilter);
 
 
-        mArffInstance.Batt_Current = BatteryManager.BATTERY_PROPERTY_CURRENT_NOW;
-        mArffInstance.BattPercentLevel =
+        _arffInstance.Batt_Current = BatteryManager.BATTERY_PROPERTY_CURRENT_NOW;
+        _arffInstance.BattPercentLevel =
                 batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1) /
                         batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
 
-        mArffInstance.Batt_Voltage = batteryStatus.getIntExtra(BatteryManager.EXTRA_VOLTAGE, -1);
-        mArffInstance.Batt_Temp = batteryStatus.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, -1);
+        _arffInstance.Batt_Voltage = batteryStatus.getIntExtra(BatteryManager.EXTRA_VOLTAGE, -1);
+        _arffInstance.Batt_Temp = batteryStatus.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, -1);
 
     }
 

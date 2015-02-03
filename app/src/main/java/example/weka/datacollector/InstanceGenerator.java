@@ -11,6 +11,8 @@ import java.util.ArrayList;
  */
 public final class InstanceGenerator {
 
+    private final Instances _emptyInstances;
+
     public InstanceGenerator(){
         _attributes = new ArrayList<>();
         _attributes.add(new Attribute("Batt_Voltage", 0));
@@ -44,17 +46,15 @@ public final class InstanceGenerator {
         classification.add("Attack");
         _attributes.add(new Attribute("Class", classification));
 
+        _emptyInstances = new Instances("AndroidAttack", _attributes, 1);
     }
 
 
     private ArrayList<Attribute> _attributes;
 
-
-
-
     public Instances getEmptyInstances(){
 
-        return new Instances("AndroidAttack", _attributes, 1);
+        return _emptyInstances;
     }
 
 }

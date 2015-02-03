@@ -28,13 +28,42 @@ public class ArffInstance {
 
 
     //CPU_Usage
-    float Load_Avg_1_min = -4;
-    float Load_Avg_5_min = -4;
-    float Load_Avg_15_min = -4;
-    int Running_Entities = -4;
-    int Total_Entities = -4;
+    public float Load_Avg_1_min = -4;
+    public float Load_Avg_5_min = -4;
+    public float Load_Avg_15_min = -4;
+    public int Running_Entities = -4;
+    public int Total_Entities = -4;
 
     public String Class;
+
+    public double[] toValues(){
+        double[] rtn = new double[20];
+        rtn[0] = Batt_Voltage;
+        rtn[1] = Batt_Current;
+        rtn[2] = Batt_Temp;
+        rtn[3] = BattPercentLevel;
+        rtn[4] = Local_RX_Packet_Delta;
+
+        rtn[5] = Local_TX_Byte_Delta = -2;
+        rtn[6] = Local_RX_Packet_Delta = -2;
+        rtn[7] = Local_RX_Byte_Delta = -2;
+        rtn[8] = Mobile_TX_Packet_Delta = -2;
+        rtn[9] = Mobile_TX_Byte_Delta = -2;
+        rtn[10] = Mobile_RX_Packet_Delta = -2;
+        rtn[11] = Mobile_RX_Byte_Delta = -2;
+
+        rtn[12] = Memory_Available = -3;  // in Megabytes
+        rtn[13] = Memory_Percentage = -3;
+
+        rtn[14] = Load_Avg_1_min = -4;
+        rtn[15] = Load_Avg_5_min = -4;
+        rtn[16] = Load_Avg_15_min = -4;
+        rtn[17] = Running_Entities = -4;
+        rtn[18] = Total_Entities = -4;
+        rtn[19] = 0; //Todo map this as some sort of key,value pair
+
+        return rtn;
+    }
 
     @Override
     public String toString(){
