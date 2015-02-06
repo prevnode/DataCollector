@@ -9,7 +9,7 @@ public class ArffInstance {
     public int Batt_Voltage = -1;
     public int Batt_Current = -1;
     public int Batt_Temp = -1;
-    public float BattPercentLevel = -1;
+    public float Batt_Percent_Level = -1;
 
 
     //Network statics are guaranteed to be monotonic so deltas should never be negative
@@ -45,7 +45,7 @@ public class ArffInstance {
         line.append(',');
         line.append(Batt_Temp);
         line.append(',');
-        line.append(BattPercentLevel);
+        line.append(Batt_Percent_Level);
         line.append(',');
         line.append(Local_TX_Packet_Delta);
         line.append(',');

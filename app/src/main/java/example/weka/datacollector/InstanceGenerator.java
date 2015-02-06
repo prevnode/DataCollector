@@ -51,7 +51,7 @@ public class InstanceGenerator extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
 
         appContext = context.getApplicationContext();
-        Toast.makeText(context, "Alarm Received", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(context, "Alarm Received", Toast.LENGTH_SHORT).show();
 
         mFileReadyToWrite = setupFileWriter();
         if(!mFileReadyToWrite) {
@@ -59,10 +59,10 @@ public class InstanceGenerator extends BroadcastReceiver {
             return;
         }
 
-        //readBatt(context);
+        readBatt(context);
         readCPU();
-        //readNetwork();
-        //readMem();
+        readNetwork();
+        readMem();
         mArffInstance.Class = "Normal";
 
         try {
@@ -73,7 +73,7 @@ public class InstanceGenerator extends BroadcastReceiver {
         }
 
         scanDataFile(file,context);
-        Log.d(TAG, "Wrote " + mArffInstance.BattPercentLevel + "...");
+        Log.d(TAG, "Wrote " + mArffInstance.Batt_Percent_Level + "...");
     }
 
     private void readMem(){
@@ -115,11 +115,6 @@ public class InstanceGenerator extends BroadcastReceiver {
         tokens = tokens[3].split("/");
         mArffInstance.Running_Entities = Integer.parseInt(tokens[0]);
         mArffInstance.Total_Entities = Integer.parseInt(tokens[1]);
-
-
-
-
-
     }
 
     private void readNetwork(){
@@ -164,7 +159,7 @@ public class InstanceGenerator extends BroadcastReceiver {
 
 
         mArffInstance.Batt_Current = BatteryManager.BATTERY_PROPERTY_CURRENT_NOW;
-        mArffInstance.BattPercentLevel =
+        mArffInstance.Batt_Percent_Level =
                 batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1) /
                         batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
 
