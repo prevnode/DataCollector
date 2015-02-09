@@ -16,6 +16,9 @@ import android.widget.Button;
 import android.content.ServiceConnection;
 import android.widget.Toast;
 
+import weka.classifiers.bayes.NaiveBayes;
+import weka.core.Instances;
+
 public class ControlDataCollection extends ActionBarActivity{
 
     private boolean mRecording;
@@ -24,6 +27,7 @@ public class ControlDataCollection extends ActionBarActivity{
     private boolean mIsBound;
     private PendingIntent pendingIntent;
     private static final String TAG = "ControlCollection";
+    private static NaiveBayes _naiveBayes = new NaiveBayes();
 
 
     @Override
@@ -90,6 +94,16 @@ public class ControlDataCollection extends ActionBarActivity{
 
         mRecording = !mRecording;
         mBoundService.setActive(mRecording);
+    }
+
+
+    public static void Classify(Instances instances){
+        if(_naiveBayes == null){
+            Log.e(TAG, "Classifier null");
+            return;
+        }
+
+        //_naiveBayes.buildClassifier();
     }
 
     private DataCollectorService mBoundService;

@@ -21,8 +21,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import weka.core.DenseInstance;
-import weka.core.Instance;
 import weka.core.Instances;
+
 
 /**
  * Upon receiving a system alarm this class reads all reads all relevant data from the phone.
@@ -42,6 +42,7 @@ public class DataCollector extends BroadcastReceiver {
     private final Instances _dataSet = _instanceGenerator.getEmptyInstances();
 
     private Context appContext;
+
 
     //Set these variables first time app is loaded
     private static long lastTotalTxPacketSample = TrafficStats.getTotalTxPackets();
@@ -78,8 +79,6 @@ public class DataCollector extends BroadcastReceiver {
 
 
     }
-
-
 
     private DenseInstance createInstance(){
 
