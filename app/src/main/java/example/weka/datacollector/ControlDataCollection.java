@@ -5,9 +5,6 @@ import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.media.MediaScannerConnection;
-import android.net.Uri;
-import android.os.Environment;
 import android.os.IBinder;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -19,9 +16,8 @@ import android.widget.Button;
 import android.content.ServiceConnection;
 import android.widget.Toast;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import weka.classifiers.bayes.NaiveBayes;
+import weka.core.Instances;
 
 public class ControlDataCollection extends ActionBarActivity{
 
@@ -31,13 +27,14 @@ public class ControlDataCollection extends ActionBarActivity{
     private boolean mIsBound;
     private PendingIntent pendingIntent;
     private static final String TAG = "ControlCollection";
+    private static NaiveBayes _naiveBayes = new NaiveBayes();
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_control_data_collection);
-        Intent alarmIntent = new Intent(ControlDataCollection.this, InstanceGenerator.class);
+        Intent alarmIntent = new Intent(ControlDataCollection.this, DataCollector.class);
         pendingIntent = PendingIntent.getBroadcast(ControlDataCollection.this, 0, alarmIntent, 0);
 
 
@@ -97,6 +94,16 @@ public class ControlDataCollection extends ActionBarActivity{
 
         mRecording = !mRecording;
         mBoundService.setActive(mRecording);
+    }
+
+
+    public static void Classify(Instances instances){
+        if(_naiveBayes == null){
+            Log.e(TAG, "Classifier null");
+            return;
+        }
+
+        //_naiveBayes.buildClassifier();
     }
 
     private DataCollectorService mBoundService;
