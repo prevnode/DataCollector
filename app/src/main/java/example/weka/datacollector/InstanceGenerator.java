@@ -48,6 +48,9 @@ public final class InstanceGenerator {
         _attributes.add(new Attribute("Class", classification));
 
         _emptyInstances = new Instances("AndroidAttack", _attributes, 1);
+
+        //Be careful that if adding more attributes class remains last
+        _emptyInstances.setClassIndex(_emptyInstances.numAttributes() -1);
     }
 
 

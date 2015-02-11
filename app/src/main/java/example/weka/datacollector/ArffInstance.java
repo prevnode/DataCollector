@@ -41,7 +41,7 @@ public class ArffInstance {
         rtn[0] = Batt_Voltage;
         rtn[1] = Batt_Current;
         rtn[2] = Batt_Temp;
-        rtn[3] = BattPercentLevel;
+        rtn[3] = Batt_Percent_Level;
         rtn[4] = Local_RX_Packet_Delta;
 
         rtn[5] = Local_TX_Byte_Delta = -2;
