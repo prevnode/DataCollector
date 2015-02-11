@@ -193,7 +193,8 @@ public class DataCollector extends BroadcastReceiver {
         Intent batteryStatus = appContext.registerReceiver(null, _battFilter);
 
 
-        _arffInstance.Batt_Current = BatteryManager.BATTERY_PROPERTY_CURRENT_NOW;
+        //_arffInstance.Batt_Current = BatteryManager.BATTERY_PROPERTY_CURRENT_NOW; Not available in API 16
+
         _arffInstance.Batt_Percent_Level =
                 batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1) /
                         batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
