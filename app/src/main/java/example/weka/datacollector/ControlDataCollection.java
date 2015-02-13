@@ -21,7 +21,9 @@ import java.io.File;
 import java.io.FileReader;
 
 import weka.classifiers.bayes.NaiveBayes;
+import weka.classifiers.trees.J48;
 import weka.core.Instances;
+import weka.core.converters.ArffLoader;
 
 public class ControlDataCollection extends ActionBarActivity{
 
@@ -33,6 +35,7 @@ public class ControlDataCollection extends ActionBarActivity{
     private static final String TAG = "ControlCollection";
     private FileReader _fileReader;
     private static NaiveBayes _naiveBayes = new NaiveBayes();
+    private static J48 _j48 = new J48();
 
 
     @Override
@@ -141,10 +144,19 @@ public class ControlDataCollection extends ActionBarActivity{
     private void TrainClassifier(){
 
         try {
+            ArffLoader loader = new ArffLoader();
 
-            Instances trainInstances = new Instances(_fileReader);
+            File trainingSet = new File(Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_PICTURES), "/arff/Training.arff" );
 
-            _naiveBayes.buildClassifier(trainInstances);
+            loader.setFile(trainingSet);
+
+            Instances trainInstances = loader.getDataSet();
+
+            //Instances trainInstances = new Instances(_fileReader);
+
+            //_naiveBayes.buildClassifier(trainInstances);
+            _j48.buildClassifier(trainInstances);
 
         }catch(Exception e){
             Log.e(TAG, "train classifier: " + e.toString());
