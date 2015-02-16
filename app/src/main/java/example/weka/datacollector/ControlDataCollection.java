@@ -143,6 +143,16 @@ public class ControlDataCollection extends ActionBarActivity{
         return true;
     }
 
+    private void FilterDataSet(){
+        /*
+        weka.filters.supervised.attribute.Discretize discretize = new Discretize();
+        discretize.setInputFormat(trainInstances);
+        Instances filteredTrainingInstances = Filter.useFilter(trainInstances,discretize);
+        Instances trainInstances = new Instances(_fileReader);
+        */
+
+    }
+
     private void TrainClassifier(){
 
         try {
@@ -156,14 +166,6 @@ public class ControlDataCollection extends ActionBarActivity{
             Instances trainInstances = loader.getDataSet();
 
             trainInstances.setClassIndex(trainInstances.numAttributes() - 1);
-
-
-            //weka.filters.supervised.attribute.Discretize discretize = new Discretize();
-            //discretize.setInputFormat(trainInstances);
-            //Instances filteredTrainingInstances = Filter.useFilter(trainInstances,discretize);
-
-
-            //Instances trainInstances = new Instances(_fileReader);
 
             try {
                 _naiveBayes.buildClassifier(trainInstances);
