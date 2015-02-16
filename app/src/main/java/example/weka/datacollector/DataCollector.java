@@ -31,7 +31,7 @@ import weka.core.Instances;
  */
 public class DataCollector extends BroadcastReceiver {
 
-    private boolean _writeToFile = false;
+    private boolean _writeToFile = true;
     private final long BYTES_IN_MEG = 1048576L;
     private final String TAG = "DataCollector";
     private boolean _fileReadyToWrite;
@@ -64,7 +64,7 @@ public class DataCollector extends BroadcastReceiver {
         readCPU();
         readNetwork();
         readMem();
-        _arffInstance.Class = "-1";
+        _arffInstance.Class = "Normal";
 
         if(_writeToFile)
             writeToFile();
@@ -181,9 +181,9 @@ public class DataCollector extends BroadcastReceiver {
         // Intent is sticky so using null as receiver works fine
         // return value contains the status
         Intent batteryStatus = appContext.registerReceiver(null, _battFilter);
-        _arffInstance.Batt_Percent_Level =
-                batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1) /
-                        batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+        int lvl = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+        int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+        _arffInstance.Batt_Percent_Level = (float)lvl / (float)scale;
 
         _arffInstance.Batt_Voltage = batteryStatus.getIntExtra(BatteryManager.EXTRA_VOLTAGE, -1);
         _arffInstance.Batt_Temp = batteryStatus.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, -1);
