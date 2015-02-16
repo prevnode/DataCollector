@@ -24,6 +24,8 @@ import weka.classifiers.bayes.NaiveBayes;
 import weka.classifiers.trees.J48;
 import weka.core.Instances;
 import weka.core.converters.ArffLoader;
+import weka.filters.Filter;
+import weka.filters.supervised.attribute.Discretize;
 
 public class ControlDataCollection extends ActionBarActivity{
 
@@ -146,22 +148,35 @@ public class ControlDataCollection extends ActionBarActivity{
         try {
             ArffLoader loader = new ArffLoader();
 
-            File trainingSet = new File(Environment.getExternalStoragePublicDirectory(
+            File trainingFile = new File(Environment.getExternalStoragePublicDirectory(
                     Environment.DIRECTORY_PICTURES), "/arff/Training.arff" );
 
-            loader.setFile(trainingSet);
+            loader.setFile(trainingFile);
 
             Instances trainInstances = loader.getDataSet();
 
+            trainInstances.setClassIndex(trainInstances.numAttributes() - 1);
+
+
+            //weka.filters.supervised.attribute.Discretize discretize = new Discretize();
+            //discretize.setInputFormat(trainInstances);
+            //Instances filteredTrainingInstances = Filter.useFilter(trainInstances,discretize);
+
+
             //Instances trainInstances = new Instances(_fileReader);
 
-            //_naiveBayes.buildClassifier(trainInstances);
-            _j48.buildClassifier(trainInstances);
+            try {
+                _naiveBayes.buildClassifier(trainInstances);
+            }catch(Error e){
+                Log.d(TAG, e.toString());
+            }
+            //_j48.buildClassifier(trainInstances);
 
         }catch(Exception e){
             Log.e(TAG, "train classifier: " + e.toString());
             return;
         }
+
     }
 
     private DataCollectorService mBoundService;

@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ResourceBundle;
 
-import weka.core.DenseInstance;
+import weka.core.Instance;
 import weka.core.Instances;
 
 
@@ -31,7 +31,7 @@ import weka.core.Instances;
  */
 public class DataCollector extends BroadcastReceiver {
 
-    private boolean _writeToFile = true;
+    private boolean _writeToFile = false;
     private final long BYTES_IN_MEG = 1048576L;
     private final String TAG = "DataCollector";
     private boolean _fileReadyToWrite;
@@ -54,10 +54,6 @@ public class DataCollector extends BroadcastReceiver {
     private static long lastRxMobilePacketSample = TrafficStats.getMobileRxPackets();
     private static long lastRxMobileByteSample = TrafficStats.getMobileRxBytes();
 
-
-    public DataCollector() {
-    }
-
     @Override
     public void onReceive(Context context, Intent intent) {
 
@@ -73,19 +69,15 @@ public class DataCollector extends BroadcastReceiver {
         if(_writeToFile)
             writeToFile();
         else{
-            _dataSet.add(createInstance() );
+            _dataSet.add( createInstance() );
             double classValue = ControlDataCollection.Classify(_dataSet);
             _dataSet.instance(_dataSet.numInstances() -1).setClassValue(classValue);
             Toast.makeText(context, "Classified as: " + classValue, Toast.LENGTH_SHORT).show();
-
         }
-
     }
 
-    private DenseInstance createInstance(){
-
-        return new DenseInstance(1, _arffInstance.toValues());
-
+    private Instance createInstance(){
+        return new Instance(1, _arffInstance.toValues());
     }
 
 
@@ -120,8 +112,6 @@ public class DataCollector extends BroadcastReceiver {
         _arffInstance.Memory_Available = mi.availMem / BYTES_IN_MEG;
         _arffInstance.Memory_Percentage = (float)mi.availMem / (float)mi.totalMem;
     }
-
-
 
     private void readCPU(){
 
