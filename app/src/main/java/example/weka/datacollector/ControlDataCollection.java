@@ -167,12 +167,7 @@ public class ControlDataCollection extends ActionBarActivity{
 
             trainInstances.setClassIndex(trainInstances.numAttributes() - 1);
 
-            try {
-                _naiveBayes.buildClassifier(trainInstances);
-            }catch(Error e){
-                Log.d(TAG, e.toString());
-            }
-            //_j48.buildClassifier(trainInstances);
+            _naiveBayes.buildClassifier(trainInstances);
 
         }catch(Exception e){
             Log.e(TAG, "train classifier: " + e.toString());
