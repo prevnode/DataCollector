@@ -181,12 +181,9 @@ public class DataCollector extends BroadcastReceiver {
         // Intent is sticky so using null as receiver works fine
         // return value contains the status
         Intent batteryStatus = appContext.registerReceiver(null, _battFilter);
-
-
-        _arffInstance.Batt_Current = BatteryManager.BATTERY_PROPERTY_CURRENT_NOW;
         _arffInstance.Batt_Percent_Level =
                 batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1) /
-                        batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+                        batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
 
         _arffInstance.Batt_Voltage = batteryStatus.getIntExtra(BatteryManager.EXTRA_VOLTAGE, -1);
         _arffInstance.Batt_Temp = batteryStatus.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, -1);
@@ -219,7 +216,6 @@ public class DataCollector extends BroadcastReceiver {
         }
         return file;
     }
-
 
     private boolean setupFileWriter(){
         if(!isExternalStorageWritable()){
