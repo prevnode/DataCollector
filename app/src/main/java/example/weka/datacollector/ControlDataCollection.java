@@ -21,7 +21,11 @@ import java.io.File;
 import java.io.FileReader;
 
 import weka.classifiers.bayes.NaiveBayes;
+import weka.classifiers.trees.J48;
 import weka.core.Instances;
+import weka.core.converters.ArffLoader;
+import weka.filters.Filter;
+import weka.filters.supervised.attribute.Discretize;
 
 public class ControlDataCollection extends ActionBarActivity{
 
@@ -33,6 +37,7 @@ public class ControlDataCollection extends ActionBarActivity{
     private static final String TAG = "ControlCollection";
     private FileReader _fileReader;
     private static NaiveBayes _naiveBayes = new NaiveBayes();
+    private static J48 _j48 = new J48();
 
 
     @Override
@@ -47,15 +52,7 @@ public class ControlDataCollection extends ActionBarActivity{
         else
             Log.e(TAG, "Unable to read training set");
 
-
         //doBindService(); //Work is now handled in a broadcaster receiver listening for alarms
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        //getMenuInflater().inflate(R.menu.menu_control_reading, menu);
-        return true;
     }
 
     @Override
@@ -138,11 +135,29 @@ public class ControlDataCollection extends ActionBarActivity{
         return true;
     }
 
+    private void FilterDataSet(){
+        /*
+        weka.filters.supervised.attribute.Discretize discretize = new Discretize();
+        discretize.setInputFormat(trainInstances);
+        Instances filteredTrainingInstances = Filter.useFilter(trainInstances,discretize);
+        Instances trainInstances = new Instances(_fileReader);
+        */
+
+    }
+
     private void TrainClassifier(){
 
         try {
+            ArffLoader loader = new ArffLoader();
 
-            Instances trainInstances = new Instances(_fileReader);
+            File trainingFile = new File(Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_PICTURES), "/arff/Training.arff" );
+
+            loader.setFile(trainingFile);
+
+            Instances trainInstances = loader.getDataSet();
+
+            trainInstances.setClassIndex(trainInstances.numAttributes() - 1);
 
             _naiveBayes.buildClassifier(trainInstances);
 
@@ -150,6 +165,7 @@ public class ControlDataCollection extends ActionBarActivity{
             Log.e(TAG, "train classifier: " + e.toString());
             return;
         }
+
     }
 
     private DataCollectorService mBoundService;

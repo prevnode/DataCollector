@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ResourceBundle;
 
-import weka.core.DenseInstance;
+import weka.core.Instance;
 import weka.core.Instances;
 
 
@@ -54,10 +54,6 @@ public class DataCollector extends BroadcastReceiver {
     private static long lastRxMobilePacketSample = TrafficStats.getMobileRxPackets();
     private static long lastRxMobileByteSample = TrafficStats.getMobileRxBytes();
 
-
-    public DataCollector() {
-    }
-
     @Override
     public void onReceive(Context context, Intent intent) {
 
@@ -68,24 +64,20 @@ public class DataCollector extends BroadcastReceiver {
         readCPU();
         readNetwork();
         readMem();
-        _arffInstance.Class = "-1";
+        _arffInstance.Class = "Normal";
 
         if(_writeToFile)
             writeToFile();
         else{
-            _dataSet.add(createInstance() );
+            _dataSet.add( createInstance() );
             double classValue = ControlDataCollection.Classify(_dataSet);
             _dataSet.instance(_dataSet.numInstances() -1).setClassValue(classValue);
             Toast.makeText(context, "Classified as: " + classValue, Toast.LENGTH_SHORT).show();
-
         }
-
     }
 
-    private DenseInstance createInstance(){
-
-        return new DenseInstance(1, _arffInstance.toValues());
-
+    private Instance createInstance(){
+        return new Instance(1, _arffInstance.toValues());
     }
 
 
@@ -120,8 +112,6 @@ public class DataCollector extends BroadcastReceiver {
         _arffInstance.Memory_Available = mi.availMem / BYTES_IN_MEG;
         _arffInstance.Memory_Percentage = (float)mi.availMem / (float)mi.totalMem;
     }
-
-
 
     private void readCPU(){
 
@@ -192,12 +182,10 @@ public class DataCollector extends BroadcastReceiver {
         // return value contains the status
         Intent batteryStatus = appContext.registerReceiver(null, _battFilter);
 
+        int lvl = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+        int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+        _arffInstance.Batt_Percent_Level = (float)lvl / (float)scale;
 
-        //_arffInstance.Batt_Current = BatteryManager.BATTERY_PROPERTY_CURRENT_NOW; Not available in API 16
-
-        _arffInstance.Batt_Percent_Level =
-                batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1) /
-                        batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
 
         _arffInstance.Batt_Voltage = batteryStatus.getIntExtra(BatteryManager.EXTRA_VOLTAGE, -1);
         _arffInstance.Batt_Temp = batteryStatus.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, -1);
@@ -230,7 +218,6 @@ public class DataCollector extends BroadcastReceiver {
         }
         return file;
     }
-
 
     private boolean setupFileWriter(){
         if(!isExternalStorageWritable()){

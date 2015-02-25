@@ -7,7 +7,7 @@ public class ArffInstance {
 
     //Battery
     public int Batt_Voltage = -1;
-    public int Batt_Current = -1;
+    //public int Batt_Current = -1; Not available in api 16
     public int Batt_Temp = -1;
     public float Batt_Percent_Level = -1;
 
@@ -37,30 +37,30 @@ public class ArffInstance {
     public String Class;
 
     public double[] toValues(){
-        double[] rtn = new double[20];
+        double[] rtn = new double[19];
         rtn[0] = Batt_Voltage;
-        rtn[1] = Batt_Current;
-        rtn[2] = Batt_Temp;
-        rtn[3] = Batt_Percent_Level;
-        rtn[4] = Local_RX_Packet_Delta;
+        //rtn[1] = Batt_Current;  Not available in api16
+        rtn[1] = Batt_Temp;
+        rtn[2] = Batt_Percent_Level;
+        rtn[3] = Local_RX_Packet_Delta;
 
-        rtn[5] = Local_TX_Byte_Delta = -2;
-        rtn[6] = Local_RX_Packet_Delta = -2;
-        rtn[7] = Local_RX_Byte_Delta = -2;
-        rtn[8] = Mobile_TX_Packet_Delta = -2;
-        rtn[9] = Mobile_TX_Byte_Delta = -2;
-        rtn[10] = Mobile_RX_Packet_Delta = -2;
-        rtn[11] = Mobile_RX_Byte_Delta = -2;
+        rtn[4] = Local_TX_Byte_Delta = -2;
+        rtn[5] = Local_RX_Packet_Delta = -2;
+        rtn[6] = Local_RX_Byte_Delta = -2;
+        rtn[7] = Mobile_TX_Packet_Delta = -2;
+        rtn[8] = Mobile_TX_Byte_Delta = -2;
+        rtn[9] = Mobile_RX_Packet_Delta = -2;
+        rtn[10] = Mobile_RX_Byte_Delta = -2;
 
-        rtn[12] = Memory_Available = -3;  // in Megabytes
-        rtn[13] = Memory_Percentage = -3;
+        rtn[11] = Memory_Available = -3;  // in Megabytes
+        rtn[12] = Memory_Percentage = -3;
 
-        rtn[14] = Load_Avg_1_min = -4;
-        rtn[15] = Load_Avg_5_min = -4;
-        rtn[16] = Load_Avg_15_min = -4;
-        rtn[17] = Running_Entities = -4;
-        rtn[18] = Total_Entities = -4;
-        rtn[19] = 0; //Todo map this as some sort of key,value pair
+        rtn[13] = Load_Avg_1_min = -4;
+        rtn[14] = Load_Avg_5_min = -4;
+        rtn[15] = Load_Avg_15_min = -4;
+        rtn[16] = Running_Entities = -4;
+        rtn[17] = Total_Entities = -4;
+        rtn[18] = 0; //Todo map this as some sort of key,value pair
 
         return rtn;
     }
@@ -69,8 +69,6 @@ public class ArffInstance {
     public String toString(){
         StringBuilder line = new StringBuilder(30);
         line.append(Batt_Voltage);
-        line.append(',');
-        line.append(Batt_Current);
         line.append(',');
         line.append(Batt_Temp);
         line.append(',');
