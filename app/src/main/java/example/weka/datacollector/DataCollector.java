@@ -10,6 +10,7 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.Environment;
+import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 import android.net.TrafficStats;
@@ -66,6 +67,7 @@ public class DataCollector extends BroadcastReceiver {
         readMem();
         _arffInstance.Class = "Normal";
 
+        /*
         if(_writeToFile)
             writeToFile();
         else{
@@ -74,6 +76,12 @@ public class DataCollector extends BroadcastReceiver {
             _dataSet.instance(_dataSet.numInstances() -1).setClassValue(classValue);
             Toast.makeText(context, "Classified as: " + classValue, Toast.LENGTH_SHORT).show();
         }
+        */
+        IBinder binder = peekService(appContext, new Intent(appContext, ClassificationService.class));
+        ClassificationService.ClassificationBinder classificationBinder = (ClassificationService.ClassificationBinder)binder;
+        if(classificationBinder != null)
+            classificationBinder.Tag();
+
     }
 
     private Instance createInstance(){

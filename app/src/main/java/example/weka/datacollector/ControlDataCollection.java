@@ -52,7 +52,7 @@ public class ControlDataCollection extends ActionBarActivity{
         else
             Log.e(TAG, "Unable to read training set");
 
-        //doBindService(); //Work is now handled in a broadcaster receiver listening for alarms
+        doBindService();
     }
 
     @Override
@@ -100,7 +100,7 @@ public class ControlDataCollection extends ActionBarActivity{
             startButton.setText("Stop");
 
         mRecording = !mRecording;
-        mBoundService.setActive(mRecording);
+        //mBoundService.setActive(mRecording);
     }
 
     public static double Classify(Instances dataSet){
@@ -168,7 +168,7 @@ public class ControlDataCollection extends ActionBarActivity{
 
     }
 
-    private DataCollectorService mBoundService;
+    private ClassificationService mBoundService;
 
     private ServiceConnection mConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
@@ -177,7 +177,9 @@ public class ControlDataCollection extends ActionBarActivity{
             // interact with the service.  Because we have bound to a explicit
             // service that we know is running in our own process, we can
             // cast its IBinder to a concrete class and directly access it.
-            mBoundService = ((DataCollectorService.LocalBinder)service).getService();
+            mBoundService = ((ClassificationService.ClassificationBinder)service).getService();
+
+                    //((DataCollectorService.LocalBinder)service).getService();
 
             // Tell the user about this for our demo.
             Toast.makeText(ControlDataCollection.this, R.string.local_service_connected,
@@ -201,8 +203,11 @@ public class ControlDataCollection extends ActionBarActivity{
         // class name because we want a specific service implementation that
         // we know will be running in our own process (and thus won't be
         // supporting component replacement by other applications).
+        //bindService(new Intent(ControlDataCollection.this,
+        //        DataCollectorService.class), mConnection, Context.BIND_AUTO_CREATE);
+
         bindService(new Intent(ControlDataCollection.this,
-                DataCollectorService.class), mConnection, Context.BIND_AUTO_CREATE);
+                ClassificationService.class), mConnection, Context.BIND_AUTO_CREATE);
         mIsBound = true;
     }
 

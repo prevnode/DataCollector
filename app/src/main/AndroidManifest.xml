@@ -28,8 +28,14 @@
         <receiver
             android:name=".DataCollector"
             android:enabled="true"
-            android:exported="true">
+            android:exported="true" >
         </receiver>
+
+        <service
+            android:name=".ClassificationService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
     </application>
 
 </manifest>

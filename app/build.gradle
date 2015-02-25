@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 16
+    compileSdkVersion 21
     buildToolsVersion "21.1.2"
     defaultConfig {
         applicationId "example.weka.datacollector"
         minSdkVersion 16
-        targetSdkVersion 16
+        targetSdkVersion 21
         versionCode 1
         versionName "1.0"
     }
@@ -27,4 +27,5 @@ dependencies {
     compile files('C:/Users/lenovo/Documents/UW Bothell/499/DataCollector/lib/weka.jar')
     compile files('C:/Users/lenovo/Documents/UW Bothell/499/DataCollector/lib/weka-src.jar')
     compile files('C:/Users/lenovo/Documents/UW Bothell/499/DataCollector/lib/weka-3.6.6-android.jar')
+    compile files('C:/Users/Research/DataCollector/lib/weka-3.6.6-android.jar')
 }
