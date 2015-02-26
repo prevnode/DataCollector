@@ -88,8 +88,6 @@ public class DataCollector extends BroadcastReceiver {
 
         }
 
-
-
     }
 
 
