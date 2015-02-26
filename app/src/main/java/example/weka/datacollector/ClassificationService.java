@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import weka.classifiers.bayes.NaiveBayes;
+import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.SerializationHelper;
 import weka.core.converters.ArffLoader;
@@ -51,8 +52,10 @@ public class ClassificationService extends Service {
 
 
             try {
+                int numberOfInstances = filteredInstances.numInstances() -1;
+                Instance toClassify = filteredInstances.instance(numberOfInstances);
 
-                double result = _naiveBayes.classifyInstance(filteredInstances.instance(filteredInstances.numInstances() - 1));
+                double result = _naiveBayes.classifyInstance(toClassify);
 
                 Toast.makeText(getApplicationContext(),"Result: " + result, Toast.LENGTH_SHORT).show();
 
@@ -77,6 +80,8 @@ public class ClassificationService extends Service {
 
         if( LoadClassifierModel() )
             PrepareFilter();
+        else
+            Log.e(TAG, "Load failed");
 
         /*
         if(PrepareFileReader() )
@@ -93,8 +98,6 @@ public class ClassificationService extends Service {
         // TODO: Return the communication channel to the service.
         return _Binder;
     }
-
-
 
     private final IBinder _Binder = new ClassificationBinder();
     private int counter;
@@ -163,7 +166,6 @@ public class ClassificationService extends Service {
             Log.e(TAG, "Failed to load model instances");
             return false;
         }
-
 
         return true;
     }

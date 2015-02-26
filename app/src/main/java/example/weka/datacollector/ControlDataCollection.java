@@ -48,11 +48,11 @@ public class ControlDataCollection extends ActionBarActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_control_data_collection);
-        Intent alarmIntent = new Intent(ControlDataCollection.this, DataCollector.class);
-        pendingIntent = PendingIntent.getBroadcast(ControlDataCollection.this, 0, alarmIntent, 0);
 
         doBindService();
 
+        Intent alarmIntent = new Intent(ControlDataCollection.this, DataCollector.class);
+        pendingIntent = PendingIntent.getBroadcast(ControlDataCollection.this, 0, alarmIntent, 0);
     }
 
     @Override

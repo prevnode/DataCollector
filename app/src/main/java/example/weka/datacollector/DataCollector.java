@@ -77,6 +77,8 @@ public class DataCollector extends BroadcastReceiver {
         }
 
         */
+
+        _dataSet.add( createInstance() );
         IBinder binder = peekService(appContext, new Intent(appContext, ClassificationService.class));
         ClassificationService.ClassificationBinder classificationBinder = (ClassificationService.ClassificationBinder)binder;
 
