@@ -26,8 +26,6 @@ public class DataCollectorService extends Service implements IInstanceCreator {
     //private AlarmManager alarmManager;
     //private PendingIntent pendingIntent;
 
-
-
     private boolean mActive;
 
     @Override
@@ -157,6 +155,5 @@ public class DataCollectorService extends Service implements IInstanceCreator {
             voltage = intent.getIntExtra(BatteryManager.EXTRA_VOLTAGE, -1);
             Log.e("BatteryManager", "level is "+level+"/"+scale+", temp is "+temp+", voltage is "+voltage);
         }
-
-    };
+    }
 }

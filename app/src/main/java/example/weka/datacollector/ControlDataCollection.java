@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Debug;
 import android.os.Environment;
 import android.os.IBinder;
 import android.support.v7.app.ActionBarActivity;
@@ -18,12 +19,18 @@ import android.content.ServiceConnection;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 
 import weka.classifiers.bayes.NaiveBayes;
 import weka.classifiers.trees.J48;
+import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ArffLoader;
+
+//Used for loading pre trained models
+import weka.classifiers.Classifier;
+import weka.core.SerializationHelper;
 import weka.filters.Filter;
 import weka.filters.supervised.attribute.Discretize;
 
@@ -37,8 +44,14 @@ public class ControlDataCollection extends ActionBarActivity{
     private static final String TAG = "ControlCollection";
     private FileReader _fileReader;
     private static NaiveBayes _naiveBayes = new NaiveBayes();
-    private static J48 _j48 = new J48();
+    private static Instances _trainInstances;
+    //private static J48 _j48 = new J48();
+    private int _numRecords;
 
+    public void incrementRecord()
+    {
+        _numRecords++;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,11 +60,9 @@ public class ControlDataCollection extends ActionBarActivity{
         Intent alarmIntent = new Intent(ControlDataCollection.this, DataCollector.class);
         pendingIntent = PendingIntent.getBroadcast(ControlDataCollection.this, 0, alarmIntent, 0);
 
-        if(PrepareFileReader() )
-            TrainClassifier();
-        else
-            Log.e(TAG, "Unable to read training set");
+        LoadClassifierModel();
 
+        //TrainClassifierFromArff();
         //doBindService(); //Work is now handled in a broadcaster receiver listening for alarms
     }
 
@@ -103,15 +114,34 @@ public class ControlDataCollection extends ActionBarActivity{
         mBoundService.setActive(mRecording);
     }
 
+    private Instances FilterDataSet(Instances unfiltered){
+
+        Discretize discretize = new Discretize();
+        try {
+            discretize.setInputFormat(_trainInstances);
+            return Filter.useFilter(_trainInstances, discretize);
+
+        }catch(Exception e) {
+            Log.e(TAG, e.toString());
+        }
+        return null;
+    }
+
+
+
     public static double Classify(Instances dataSet){
         if(_naiveBayes == null){
             Log.e(TAG, "Classifier null");
             return  -1;
         }
 
-        try {
+        //Instances filteredDataSet = FilterDataSet(dataSet);
 
-            return _naiveBayes.classifyInstance(dataSet.instance(dataSet.numInstances() - 1));
+        try {
+            int num = dataSet.numInstances();
+            Instance in = dataSet.instance(num - 1);
+
+            return _naiveBayes.classifyInstance(in);
             //instances.instance(0).setClassValue(clsLabel);
 
         }catch(Exception e){
@@ -120,6 +150,15 @@ public class ControlDataCollection extends ActionBarActivity{
         }
 
     }
+
+    private void TrainClassifierFromArff(){
+        if(PrepareFileReader() )
+            TrainClassifier();
+        else
+            Log.e(TAG, "Unable to read training set");
+    }
+
+
 
     private boolean PrepareFileReader(){
         File trainingSet = new File(Environment.getExternalStoragePublicDirectory(
@@ -135,15 +174,6 @@ public class ControlDataCollection extends ActionBarActivity{
         return true;
     }
 
-    private void FilterDataSet(){
-        /*
-        weka.filters.supervised.attribute.Discretize discretize = new Discretize();
-        discretize.setInputFormat(trainInstances);
-        Instances filteredTrainingInstances = Filter.useFilter(trainInstances,discretize);
-        Instances trainInstances = new Instances(_fileReader);
-        */
-
-    }
 
     private void TrainClassifier(){
 
@@ -164,6 +194,25 @@ public class ControlDataCollection extends ActionBarActivity{
         }catch(Exception e){
             Log.e(TAG, "train classifier: " + e.toString());
             return;
+        }
+
+    }
+
+    private void LoadClassifierModel(){
+
+
+        try {
+
+            FileInputStream fStream = new FileInputStream(new File(Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_PICTURES), "/arff/NBTrainedOnSet2.model" ) );
+
+            Object o[] = SerializationHelper.readAll(fStream);
+
+            _naiveBayes = (NaiveBayes) o[0];
+            _trainInstances = (Instances) o[1];
+
+        }catch (Exception e){
+            Log.e(TAG, e.toString());
         }
 
     }

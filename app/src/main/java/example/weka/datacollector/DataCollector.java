@@ -19,7 +19,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ResourceBundle;
 
 import weka.core.Instance;
 import weka.core.Instances;
@@ -31,7 +30,7 @@ import weka.core.Instances;
  */
 public class DataCollector extends BroadcastReceiver {
 
-    private boolean _writeToFile = true;
+    private boolean _writeToFile = false;
     private final long BYTES_IN_MEG = 1048576L;
     private final String TAG = "DataCollector";
     private boolean _fileReadyToWrite;
@@ -64,7 +63,7 @@ public class DataCollector extends BroadcastReceiver {
         readCPU();
         readNetwork();
         readMem();
-        _arffInstance.Class = "Normal";
+        _arffInstance.Class = "Infected";
 
         if(_writeToFile)
             writeToFile();
@@ -74,12 +73,13 @@ public class DataCollector extends BroadcastReceiver {
             _dataSet.instance(_dataSet.numInstances() -1).setClassValue(classValue);
             Toast.makeText(context, "Classified as: " + classValue, Toast.LENGTH_SHORT).show();
         }
+
     }
+
 
     private Instance createInstance(){
         return new Instance(1, _arffInstance.toValues());
     }
-
 
     private boolean writeToFile(){
         _fileReadyToWrite = setupFileWriter();
@@ -97,11 +97,8 @@ public class DataCollector extends BroadcastReceiver {
             return false;
         }
 
-
-        scanDataFile(file,appContext);
         Log.d(TAG, "Wrote " + _arffInstance.Batt_Percent_Level + "...");
         return  true;
-
     }
 
     private void readMem(){
@@ -128,7 +125,6 @@ public class DataCollector extends BroadcastReceiver {
             }
 
             cpuData = log.toString();
-
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -173,7 +169,6 @@ public class DataCollector extends BroadcastReceiver {
         lastTxMobileByteSample      = txMobleBytes;
         lastRxMobilePacketSample    = rxMobilePackets;
         lastRxMobileByteSample      = rxMobileBytes;
-
     }
 
     private void readBatt(Context context){
@@ -193,12 +188,8 @@ public class DataCollector extends BroadcastReceiver {
     /* Checks if external storage is available for read and write */
     private boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state)) {
-            return true;
-        }
-        return false;
+        return(Environment.MEDIA_MOUNTED.equals(state));
     }
-
 
     private File getDocumentsDir(String dataDirName) {
 
