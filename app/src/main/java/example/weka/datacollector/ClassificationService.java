@@ -19,6 +19,8 @@ import weka.classifiers.bayes.NaiveBayes;
 import weka.core.Instances;
 import weka.core.SerializationHelper;
 import weka.core.converters.ArffLoader;
+import weka.filters.Filter;
+import weka.filters.supervised.attribute.Discretize;
 
 public class ClassificationService extends Service {
     public ClassificationService() {
@@ -33,6 +35,35 @@ public class ClassificationService extends Service {
             Toast.makeText(getApplicationContext(),"count: " + counter, Toast.LENGTH_SHORT).show();
             counter++;
         }
+
+        public void Classify(Instances dataSet){
+
+            if(_naiveBayes == null){
+                Log.e(TAG, "Classifier null");
+                return;
+            }
+
+            Instances filteredInstances = FilterDataSet(dataSet);
+            if(filteredInstances == null){
+                Log.e(TAG, "classify can't use null filtered dataset");
+                return;
+            }
+
+
+            try {
+
+                double result = _naiveBayes.classifyInstance(filteredInstances.instance(filteredInstances.numInstances() - 1));
+
+                Toast.makeText(getApplicationContext(),"Result: " + result, Toast.LENGTH_SHORT).show();
+
+                //instances.instance(0).setClassValue(clsLabel);
+
+            }catch(Exception e){
+                Log.e(TAG, "Classify: " + e.toString());
+                return;
+            }
+
+        }
     }
 
     @Override
@@ -44,7 +75,8 @@ public class ClassificationService extends Service {
     public void onCreate(){
         counter = 1;
 
-        LoadClassifierModel();
+        if( LoadClassifierModel() )
+            PrepareFilter();
 
         /*
         if(PrepareFileReader() )
@@ -62,30 +94,15 @@ public class ClassificationService extends Service {
         return _Binder;
     }
 
-    public double Classify(Instances dataSet){
 
-        if(_naiveBayes == null){
-            Log.e(TAG, "Classifier null");
-            return  -1;
-        }
-
-        try {
-
-            return _naiveBayes.classifyInstance(dataSet.instance(dataSet.numInstances() - 1));
-            //instances.instance(0).setClassValue(clsLabel);
-
-        }catch(Exception e){
-            Log.e(TAG, "Classify: " + e.toString());
-            return -1;
-        }
-
-    }
 
     private final IBinder _Binder = new ClassificationBinder();
     private int counter;
     private NaiveBayes _naiveBayes = new NaiveBayes();
     private final String TAG = "ClassificationService";
     private FileReader _fileReader;
+    private Instances _trainInstances;
+    private Discretize _discretize;
 
     private void TrainClassifier(){
 
@@ -113,7 +130,6 @@ public class ClassificationService extends Service {
 
     private boolean LoadClassifierModel(){
 
-
         File model = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), "arff/NBTrainedONSet2.model");
 
@@ -137,12 +153,29 @@ public class ClassificationService extends Service {
         _naiveBayes = (NaiveBayes)o[0];
 
         if(_naiveBayes == null){
-            Log.e(TAG, "Failed to load model");
+            Log.e(TAG, "Failed to load model classifier");
+            return false;
+        }
+
+        _trainInstances = (Instances)o[1];
+
+        if(_trainInstances == null){
+            Log.e(TAG, "Failed to load model instances");
             return false;
         }
 
 
         return true;
+    }
+
+    private void PrepareFilter(){
+        _discretize = new Discretize();
+        try {
+            _discretize.setInputFormat(_trainInstances);
+        }catch (Exception e){
+            Log.e(TAG, "prepare filter: " + e.toString());
+        }
+
     }
 
     private boolean PrepareFileReader(){
@@ -157,5 +190,22 @@ public class ClassificationService extends Service {
         }
 
         return true;
+    }
+
+    /**
+     * Applies the discretize filter to the instances
+     * @param toFilter
+     * @return Instances with the filter applied or null if error occurred
+     */
+    private Instances FilterDataSet(Instances toFilter){
+        Instances filtered = null;
+
+        try{
+            filtered = Filter.useFilter(toFilter, _discretize);
+        }catch (Exception e){
+            Log.e(TAG, "filterData: " + e.toString() );
+        }
+
+        return filtered;
     }
 }

@@ -97,16 +97,6 @@ public class ControlDataCollection extends ActionBarActivity{
     }
 
 
-    private void FilterDataSet(){
-        /*
-        weka.filters.supervised.attribute.Discretize discretize = new Discretize();
-        discretize.setInputFormat(trainInstances);
-        Instances filteredTrainingInstances = Filter.useFilter(trainInstances,discretize);
-        Instances trainInstances = new Instances(_fileReader);
-        */
-
-    }
-
     private ClassificationService mBoundService;
 
     private ServiceConnection mConnection = new ServiceConnection() {

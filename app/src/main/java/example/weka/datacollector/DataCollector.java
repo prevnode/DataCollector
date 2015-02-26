@@ -79,8 +79,13 @@ public class DataCollector extends BroadcastReceiver {
         */
         IBinder binder = peekService(appContext, new Intent(appContext, ClassificationService.class));
         ClassificationService.ClassificationBinder classificationBinder = (ClassificationService.ClassificationBinder)binder;
-        if(classificationBinder != null)
-            classificationBinder.Tag();
+
+        if(classificationBinder != null){
+            //classificationBinder.Tag();
+            classificationBinder.Classify(_dataSet);
+
+        }
+
 
     }
 
