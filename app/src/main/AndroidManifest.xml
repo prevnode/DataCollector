@@ -32,8 +32,9 @@
         </receiver>
 
         <service
-            android:name=".ClassifyService"
-            android:exported="false" >
+            android:name=".ClassificationService"
+            android:enabled="true"
+            android:exported="true" >
         </service>
     </application>
 

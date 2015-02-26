@@ -14,24 +14,20 @@ import android.widget.Toast;
 import android.content.BroadcastReceiver;
 import android.app.PendingIntent;
 
-public class DataCollectorService extends Service implements IInstanceCreator {
+public class DataCollectorService extends Service {
     public DataCollectorService() {
     }
-    private static final String TAG = "BatterySampleService";
+    private static final String TAG = "DataCollector";
     private NotificationManager mNM;
     private MyReceiver mReceiver = new MyReceiver();
     private IntentFilter battFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-    private IInstanceReceiver instanceReceiver;
+
     private ArffInstance mArffInstance;
     //private AlarmManager alarmManager;
     //private PendingIntent pendingIntent;
 
     private boolean mActive;
 
-    @Override
-    public void RegisterReceiver(IInstanceReceiver ir){
-        instanceReceiver = ir;
-    }
 
     // Unique Identification Number for the Notification.
     // We use it on Notification start, and to cancel it.
@@ -49,13 +45,12 @@ public class DataCollectorService extends Service implements IInstanceCreator {
         Intent batteryStatus = this.registerReceiver(null, battFilter);
 
         mArffInstance = new ArffInstance();
+        //mArffInstance.Batt_Current = BatteryManager.BATTERY_PROPERTY_CURRENT_NOW; Not available in API 16
+
 
         mArffInstance.Batt_Percent_Level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
         mArffInstance.Batt_Voltage = batteryStatus.getIntExtra(BatteryManager.EXTRA_VOLTAGE, -1);
         mArffInstance.Batt_Temp = batteryStatus.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, -1);
-
-        if(instanceReceiver != null)
-            instanceReceiver.receiveData(mArffInstance);
 
     }
 

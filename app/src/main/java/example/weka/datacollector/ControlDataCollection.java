@@ -42,16 +42,7 @@ public class ControlDataCollection extends ActionBarActivity{
     private boolean mIsBound;
     private PendingIntent pendingIntent;
     private static final String TAG = "ControlCollection";
-    private FileReader _fileReader;
-    private static NaiveBayes _naiveBayes = new NaiveBayes();
-    private static Instances _trainInstances;
-    //private static J48 _j48 = new J48();
-    private int _numRecords;
 
-    public void incrementRecord()
-    {
-        _numRecords++;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,10 +51,8 @@ public class ControlDataCollection extends ActionBarActivity{
         Intent alarmIntent = new Intent(ControlDataCollection.this, DataCollector.class);
         pendingIntent = PendingIntent.getBroadcast(ControlDataCollection.this, 0, alarmIntent, 0);
 
-        LoadClassifierModel();
+        doBindService();
 
-        //TrainClassifierFromArff();
-        //doBindService(); //Work is now handled in a broadcaster receiver listening for alarms
     }
 
     @Override
@@ -111,113 +100,13 @@ public class ControlDataCollection extends ActionBarActivity{
             startButton.setText("Stop");
 
         mRecording = !mRecording;
-        mBoundService.setActive(mRecording);
-    }
 
-    private Instances FilterDataSet(Instances unfiltered){
-
-        Discretize discretize = new Discretize();
-        try {
-            discretize.setInputFormat(_trainInstances);
-            return Filter.useFilter(_trainInstances, discretize);
-
-        }catch(Exception e) {
-            Log.e(TAG, e.toString());
-        }
-        return null;
+        //mBoundService.setActive(mRecording);
     }
 
 
+    private ClassificationService mBoundService;
 
-    public static double Classify(Instances dataSet){
-        if(_naiveBayes == null){
-            Log.e(TAG, "Classifier null");
-            return  -1;
-        }
-
-        //Instances filteredDataSet = FilterDataSet(dataSet);
-
-        try {
-            int num = dataSet.numInstances();
-            Instance in = dataSet.instance(num - 1);
-
-            return _naiveBayes.classifyInstance(in);
-            //instances.instance(0).setClassValue(clsLabel);
-
-        }catch(Exception e){
-            Log.e(TAG, "Classify: " + e.toString());
-            return -1;
-        }
-
-    }
-
-    private void TrainClassifierFromArff(){
-        if(PrepareFileReader() )
-            TrainClassifier();
-        else
-            Log.e(TAG, "Unable to read training set");
-    }
-
-
-
-    private boolean PrepareFileReader(){
-        File trainingSet = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "/arff/Training.arff" );
-
-        try {
-            _fileReader = new FileReader(trainingSet);
-        }catch(Exception e){
-            Log.e(TAG, "Prepare reader: " + e.toString());
-            return false;
-        }
-
-        return true;
-    }
-
-
-    private void TrainClassifier(){
-
-        try {
-            ArffLoader loader = new ArffLoader();
-
-            File trainingFile = new File(Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_PICTURES), "/arff/Training.arff" );
-
-            loader.setFile(trainingFile);
-
-            Instances trainInstances = loader.getDataSet();
-
-            trainInstances.setClassIndex(trainInstances.numAttributes() - 1);
-
-            _naiveBayes.buildClassifier(trainInstances);
-
-        }catch(Exception e){
-            Log.e(TAG, "train classifier: " + e.toString());
-            return;
-        }
-
-    }
-
-    private void LoadClassifierModel(){
-
-
-        try {
-
-            FileInputStream fStream = new FileInputStream(new File(Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_PICTURES), "/arff/NBTrainedOnSet2.model" ) );
-
-            Object o[] = SerializationHelper.readAll(fStream);
-
-            _naiveBayes = (NaiveBayes) o[0];
-            _trainInstances = (Instances) o[1];
-
-        }catch (Exception e){
-            Log.e(TAG, e.toString());
-        }
-
-    }
-
-    private DataCollectorService mBoundService;
 
     private ServiceConnection mConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
@@ -226,7 +115,9 @@ public class ControlDataCollection extends ActionBarActivity{
             // interact with the service.  Because we have bound to a explicit
             // service that we know is running in our own process, we can
             // cast its IBinder to a concrete class and directly access it.
-            mBoundService = ((DataCollectorService.LocalBinder)service).getService();
+            mBoundService = ((ClassificationService.ClassificationBinder)service).getService();
+
+                    //((DataCollectorService.LocalBinder)service).getService();
 
             // Tell the user about this for our demo.
             Toast.makeText(ControlDataCollection.this, R.string.local_service_connected,
@@ -250,8 +141,11 @@ public class ControlDataCollection extends ActionBarActivity{
         // class name because we want a specific service implementation that
         // we know will be running in our own process (and thus won't be
         // supporting component replacement by other applications).
+        //bindService(new Intent(ControlDataCollection.this,
+        //        DataCollectorService.class), mConnection, Context.BIND_AUTO_CREATE);
+
         bindService(new Intent(ControlDataCollection.this,
-                DataCollectorService.class), mConnection, Context.BIND_AUTO_CREATE);
+                ClassificationService.class), mConnection, Context.BIND_AUTO_CREATE);
         mIsBound = true;
     }
 
