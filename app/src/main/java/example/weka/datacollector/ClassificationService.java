@@ -12,10 +12,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 import java.io.InputStream;
 
 import weka.classifiers.bayes.NaiveBayes;
+import weka.classifiers.meta.FilteredClassifier;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.SerializationHelper;
@@ -39,7 +39,7 @@ public class ClassificationService extends Service {
 
         public void Classify(Instances dataSet){
 
-            if(_naiveBayes == null){
+            if(_filteredClassifier == null){
                 Log.e(TAG, "Classifier null");
                 return;
             }
@@ -60,7 +60,7 @@ public class ClassificationService extends Service {
 
                 if(_trainInstances.equalHeaders(filteredInstances)) {
 
-                    result = _naiveBayes.classifyInstance(toClassify);
+                    result = _filteredClassifier.classifyInstance(toClassify);
                 }
                 else{
                     Log.e(TAG, "incompatible headers");
@@ -113,6 +113,7 @@ public class ClassificationService extends Service {
     private final IBinder _Binder = new ClassificationBinder();
     private int counter;
     private NaiveBayes _naiveBayes = new NaiveBayes();
+    private FilteredClassifier _filteredClassifier = null;
     private final String TAG = "ClassificationService";
     private FileReader _fileReader;
     private Instances _trainInstances;
@@ -132,7 +133,8 @@ public class ClassificationService extends Service {
 
             trainInstances.setClassIndex(trainInstances.numAttributes() - 1);
 
-            _naiveBayes.buildClassifier(trainInstances);
+            //_naiveBayes.buildClassifier(trainInstances);
+            _filteredClassifier.buildClassifier(trainInstances);
 
         }catch(Exception e){
             Log.e(TAG, "train classifier: " + e.toString());
@@ -164,9 +166,10 @@ public class ClassificationService extends Service {
             return false;
         }
 
-        _naiveBayes = (NaiveBayes)o[0];
+        //_naiveBayes = (NaiveBayes)o[0];
+        _filteredClassifier = (FilteredClassifier)o[0];
 
-        if(_naiveBayes == null){
+        if(_filteredClassifier == null){
             Log.e(TAG, "Failed to load model classifier");
             return false;
         }
