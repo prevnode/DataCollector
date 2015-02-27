@@ -39,7 +39,7 @@ public class ClassificationService extends Service {
 
         public void Classify(Instances dataSet){
 
-            if(_filteredClassifier == null){
+            if(_naiveBayes == null){
                 Log.e(TAG, "Classifier null");
                 return;
             }
@@ -60,7 +60,7 @@ public class ClassificationService extends Service {
 
                 if(_trainInstances.equalHeaders(filteredInstances)) {
 
-                    result = _filteredClassifier.classifyInstance(toClassify);
+                    result = _naiveBayes.classifyInstance(toClassify);
                 }
                 else{
                     Log.e(TAG, "incompatible headers");
@@ -113,7 +113,7 @@ public class ClassificationService extends Service {
     private final IBinder _Binder = new ClassificationBinder();
     private int counter;
     private NaiveBayes _naiveBayes = new NaiveBayes();
-    private FilteredClassifier _filteredClassifier = null;
+    //private FilteredClassifier _filteredClassifier = null;
     private final String TAG = "ClassificationService";
     private FileReader _fileReader;
     private Instances _trainInstances;
@@ -133,8 +133,8 @@ public class ClassificationService extends Service {
 
             trainInstances.setClassIndex(trainInstances.numAttributes() - 1);
 
-            //_naiveBayes.buildClassifier(trainInstances);
-            _filteredClassifier.buildClassifier(trainInstances);
+            _naiveBayes.buildClassifier(trainInstances);
+            //_filteredClassifier.buildClassifier(trainInstances);
 
         }catch(Exception e){
             Log.e(TAG, "train classifier: " + e.toString());
@@ -166,10 +166,10 @@ public class ClassificationService extends Service {
             return false;
         }
 
-        //_naiveBayes = (NaiveBayes)o[0];
-        _filteredClassifier = (FilteredClassifier)o[0];
+        _naiveBayes = (NaiveBayes)o[0];
+        //_filteredClassifier = (FilteredClassifier)o[0];
 
-        if(_filteredClassifier == null){
+        if(_naiveBayes == null){
             Log.e(TAG, "Failed to load model classifier");
             return false;
         }
@@ -186,7 +186,13 @@ public class ClassificationService extends Service {
 
     private void PrepareFilter(){
         _discretize = new Discretize();
+        String[] options = new String[2];
+
+        options[0] = "-R";
+        options[1] = "first-last";
+
         try {
+            _discretize.setOptions(options);
             _discretize.setInputFormat(_trainInstances);
         }catch (Exception e){
             Log.e(TAG, "prepare filter: " + e.toString());
