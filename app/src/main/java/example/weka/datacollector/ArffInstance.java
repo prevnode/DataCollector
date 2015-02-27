@@ -60,7 +60,7 @@ public class ArffInstance {
         rtn[15] = Load_Avg_15_min = -4;
         rtn[16] = Running_Entities = -4;
         rtn[17] = Total_Entities = -4;
-        rtn[18] = 0; //Todo map this as some sort of key,value pair
+        rtn[18] = -1; //Todo map this as some sort of key,value pair
 
         return rtn;
     }

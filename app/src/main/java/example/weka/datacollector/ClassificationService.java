@@ -208,6 +208,7 @@ public class ClassificationService extends Service {
      */
     private Instances FilterDataSet(Instances toFilter){
         Instances filtered = null;
+        String arff = toFilter.toString();
 
         try{
             filtered = Filter.useFilter(toFilter, _discretize);
