@@ -191,19 +191,6 @@ public class ClassificationService extends Service {
 
     }
 
-    private boolean PrepareFileReader(){
-        File trainingSet = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "/arff/Training.arff" );
-
-        try {
-            _fileReader = new FileReader(trainingSet);
-        }catch(Exception e){
-            Log.e(TAG, "Prepare reader: " + e.toString());
-            return false;
-        }
-
-        return true;
-    }
 
     /**
      * Applies the discretize filter to the instances
@@ -220,5 +207,20 @@ public class ClassificationService extends Service {
         }
 
         return filtered;
+    }
+
+
+    private boolean PrepareFileReader(){
+        File trainingSet = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES), "/arff/Training.arff" );
+
+        try {
+            _fileReader = new FileReader(trainingSet);
+        }catch(Exception e){
+            Log.e(TAG, "Prepare reader: " + e.toString());
+            return false;
+        }
+
+        return true;
     }
 }
