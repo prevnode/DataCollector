@@ -64,7 +64,7 @@ public class DataCollector extends BroadcastReceiver {
         readCPU();
         readNetwork();
         readMem();
-        _arffInstance.Class = "Infected";
+        _arffInstance.Class = "?";
 
         /*
         if(_writeToFile)

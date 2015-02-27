@@ -44,6 +44,8 @@ public class ClassificationService extends Service {
                 return;
             }
 
+            double result = -1;
+
             Instances filteredInstances = FilterDataSet(dataSet);
             if(filteredInstances == null){
                 Log.e(TAG, "classify can't use null filtered dataset");
@@ -53,9 +55,18 @@ public class ClassificationService extends Service {
 
             try {
                 int numberOfInstances = filteredInstances.numInstances() -1;
+
                 Instance toClassify = filteredInstances.instance(numberOfInstances);
 
-                double result = _naiveBayes.classifyInstance(toClassify);
+                if(_trainInstances.equalHeaders(filteredInstances)) {
+
+                    result = _naiveBayes.classifyInstance(toClassify);
+                }
+                else{
+                    Log.e(TAG, "incompatible headers");
+                    return;
+                }
+
 
                 Toast.makeText(getApplicationContext(),"Result: " + result, Toast.LENGTH_SHORT).show();
 
