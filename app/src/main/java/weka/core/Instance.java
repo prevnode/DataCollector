@@ -599,7 +599,6 @@ public class Instance
    * @param instances the reference to the dataset 
    */
   public final void setDataset(Instances instances) {
-    
     m_Dataset = instances;
   }
 

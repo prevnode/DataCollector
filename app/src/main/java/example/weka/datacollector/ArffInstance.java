@@ -44,23 +44,23 @@ public class ArffInstance {
         rtn[2] = Batt_Percent_Level;
         rtn[3] = Local_RX_Packet_Delta;
 
-        rtn[4] = Local_TX_Byte_Delta = -2;
-        rtn[5] = Local_RX_Packet_Delta = -2;
-        rtn[6] = Local_RX_Byte_Delta = -2;
-        rtn[7] = Mobile_TX_Packet_Delta = -2;
-        rtn[8] = Mobile_TX_Byte_Delta = -2;
-        rtn[9] = Mobile_RX_Packet_Delta = -2;
-        rtn[10] = Mobile_RX_Byte_Delta = -2;
+        rtn[4] = Local_TX_Byte_Delta;
+        rtn[5] = Local_RX_Packet_Delta;
+        rtn[6] = Local_RX_Byte_Delta;
+        rtn[7] = Mobile_TX_Packet_Delta;
+        rtn[8] = Mobile_TX_Byte_Delta;
+        rtn[9] = Mobile_RX_Packet_Delta;
+        rtn[10] = Mobile_RX_Byte_Delta;
 
-        rtn[11] = Memory_Available = -3;  // in Megabytes
-        rtn[12] = Memory_Percentage = -3;
+        rtn[11] = Memory_Available;  // in Megabytes
+        rtn[12] = Memory_Percentage;
 
-        rtn[13] = Load_Avg_1_min = -4;
-        rtn[14] = Load_Avg_5_min = -4;
-        rtn[15] = Load_Avg_15_min = -4;
-        rtn[16] = Running_Entities = -4;
-        rtn[17] = Total_Entities = -4;
-        rtn[18] = -1; //Todo map this as some sort of key,value pair
+        rtn[13] = Load_Avg_1_min;
+        rtn[14] = Load_Avg_5_min;
+        rtn[15] = Load_Avg_15_min;
+        rtn[16] = Running_Entities;
+        rtn[17] = Total_Entities;
+        rtn[18] = 0; //Todo map this as some sort of key,value pair
 
         return rtn;
     }

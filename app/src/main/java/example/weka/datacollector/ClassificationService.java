@@ -40,18 +40,33 @@ public class ClassificationService extends Service {
         public void Classify(Instance testInstance){
 
             Instances testSet = new Instances(_trainInstances, 0, 0);
+            //Instances testSet = new Instances();
+            int numAttributes = testInstance.numAttributes();
+            double values[] = new double[numAttributes];
 
-            try{
-                testInstance.setDataset(testSet);
-            }catch(Exception e){
-                Log.e(TAG, "set dataset: " + e.toString() );
+            for(int i= 0; i < numAttributes; ++i )
+            {
+                values[i] = testInstance.value(i);
             }
+
+            Instance localTestInstance = new Instance(1,values);
+
+
+
+            testSet.setRelationName("phone-weka.filters.supervised.attribute.Discretize-Rfirst-last");
+
 
 
             try {
-                testSet.add(testInstance);
-            }catch(Exception e){
-                Log.e(TAG, "add: " + e.toString());
+                testSet.add((Instance)localTestInstance);
+            }catch(Throwable t){
+                Log.e(TAG, "add: " + t.toString());
+            }
+
+            try{
+                testInstance.setDataset(testSet);
+            }catch(java.lang.ArrayIndexOutOfBoundsException e){
+                Log.e(TAG, "set dataset: " + e.toString() );
             }
 
 
