@@ -92,7 +92,9 @@ public class DataCollector extends BroadcastReceiver {
 
 
     private Instance createInstance(){
-        return new Instance(1, _arffInstance.toValues());
+        Instance in;
+        in = new Instance(1, _arffInstance.toValues());
+        return in;
     }
 
     private boolean writeToFile(){
