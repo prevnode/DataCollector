@@ -37,7 +37,14 @@ public class ClassificationService extends Service {
             counter++;
         }
 
-        public void Classify(Instances dataSet){
+        public void Classify(Instance testInstance){
+
+            Instances testSet = new Instances(_trainInstances, 0, 0);
+
+            //testSet.
+
+            testSet.add(testInstance);
+
 
             if(_naiveBayes == null){
                 Log.e(TAG, "Classifier null");
@@ -46,7 +53,7 @@ public class ClassificationService extends Service {
 
             double result = -1;
 
-            Instances filteredInstances = FilterDataSet(dataSet);
+            Instances filteredInstances = FilterDataSet(testSet);
             if(filteredInstances == null){
                 Log.e(TAG, "classify can't use null filtered dataset");
                 return;
@@ -208,7 +215,9 @@ public class ClassificationService extends Service {
      */
     private Instances FilterDataSet(Instances toFilter){
         Instances filtered = null;
-        String arff = toFilter.toString();
+        //String arff = toFilter.toString();
+
+        boolean formatted = _discretize.isOutputFormatDefined();
 
         try{
             filtered = Filter.useFilter(toFilter, _discretize);
