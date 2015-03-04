@@ -41,9 +41,28 @@ public class ClassificationService extends Service {
 
             Instances testSet = new Instances(_trainInstances, 0, 0);
 
-            //testSet.
 
-            testSet.add(testInstance);
+
+            try {
+                testSet.add(testInstance);
+            }catch(Exception e){
+                Log.e(TAG, "add: " + e.toString());
+            }
+
+            try{
+                testInstance.setDataset(testSet);
+            }catch(Exception e){
+                Log.e(TAG, "set dataset: " + e.toString() );
+            }
+
+
+            try {
+
+                testInstance.setClassMissing();
+
+            }catch(Exception e){
+                Log.e(TAG, "set Class Missing: " + e.toString());
+            }
 
 
             if(_naiveBayes == null){
