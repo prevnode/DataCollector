@@ -41,14 +41,6 @@ public class ClassificationService extends Service {
 
             Instances testSet = new Instances(_trainInstances, 0, 0);
 
-
-
-            try {
-                testSet.add(testInstance);
-            }catch(Exception e){
-                Log.e(TAG, "add: " + e.toString());
-            }
-
             try{
                 testInstance.setDataset(testSet);
             }catch(Exception e){
@@ -57,9 +49,14 @@ public class ClassificationService extends Service {
 
 
             try {
+                testSet.add(testInstance);
+            }catch(Exception e){
+                Log.e(TAG, "add: " + e.toString());
+            }
 
+
+            try {
                 testInstance.setClassMissing();
-
             }catch(Exception e){
                 Log.e(TAG, "set Class Missing: " + e.toString());
             }
