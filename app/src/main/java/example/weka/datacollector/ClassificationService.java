@@ -41,6 +41,10 @@ public class ClassificationService extends Service {
 
             Instances testSet = new Instances(_trainInstances, 0, 0);
 
+            //testSet.
+
+            testSet.add(testInstance);
+
 
             if(_naiveBayes == null){
                 Log.e(TAG, "Classifier null");

@@ -40,7 +40,8 @@ public class DataCollector extends BroadcastReceiver {
     private FileWriter _fileWriter;
     private ArffInstance _arffInstance = new ArffInstance();
     private static InstanceGenerator _instanceGenerator = new InstanceGenerator();
-    private final Instances _dataSet = _instanceGenerator.getEmptyInstances();
+    private Instance _testInstance;
+    //private final Instances _dataSet = _instanceGenerator.getEmptyInstances();
 
     private Context appContext;
 
@@ -78,22 +79,20 @@ public class DataCollector extends BroadcastReceiver {
 
         */
 
-        _dataSet.add( createInstance() );
+        _testInstance = createInstance();
         IBinder binder = peekService(appContext, new Intent(appContext, ClassificationService.class));
         ClassificationService.ClassificationBinder classificationBinder = (ClassificationService.ClassificationBinder)binder;
 
         if(classificationBinder != null){
             //classificationBinder.Tag();
-            classificationBinder.Classify(_dataSet);
-
+            classificationBinder.Classify(_testInstance);
         }
-
     }
-
 
     private Instance createInstance(){
         Instance in;
-        in = new Instance(1, _arffInstance.toValues());
+        double values[] = _arffInstance.toValues();
+        in = new Instance(1, values);
         return in;
     }
 
@@ -165,7 +164,6 @@ public class DataCollector extends BroadcastReceiver {
         long rxMobilePackets = TrafficStats.getMobileRxPackets();
         long rxMobileBytes = TrafficStats.getMobileRxBytes();
 
-
         //Delta is difference between current and last counts
         _arffInstance.Local_TX_Packet_Delta = (txTotalPackets - txMobilePackets) - lastTotalTxPacketSample;
         _arffInstance.Local_TX_Byte_Delta = (txTotalBytes - txMobleBytes) - lastTotalTxByteSample;
@@ -197,10 +195,8 @@ public class DataCollector extends BroadcastReceiver {
         int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
         _arffInstance.Batt_Percent_Level = (float)lvl / (float)scale;
 
-
         _arffInstance.Batt_Voltage = batteryStatus.getIntExtra(BatteryManager.EXTRA_VOLTAGE, -1);
         _arffInstance.Batt_Temp = batteryStatus.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, -1);
-
     }
 
     /* Checks if external storage is available for read and write */
@@ -250,5 +246,4 @@ public class DataCollector extends BroadcastReceiver {
                     }
                 });
     }
-
 }
