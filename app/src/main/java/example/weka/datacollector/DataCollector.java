@@ -85,7 +85,8 @@ public class DataCollector extends BroadcastReceiver {
 
         if(classificationBinder != null){
             //classificationBinder.Tag();
-            classificationBinder.Classify(_testInstance);
+            //classificationBinder.Classify(_testInstance);
+            classificationBinder.sendData(_testInstance.toDoubleArray());
         }
     }
 

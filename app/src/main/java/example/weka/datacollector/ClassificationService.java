@@ -24,6 +24,9 @@ import weka.filters.Filter;
 import weka.filters.supervised.attribute.Discretize;
 
 public class ClassificationService extends Service {
+
+    private Instance _testInstance;
+
     public ClassificationService() {
     }
 
@@ -113,6 +116,10 @@ public class ClassificationService extends Service {
                 return;
             }
 
+        }
+
+        public void sendData(double[] data){
+            double[] local = data.clone();
         }
     }
 
