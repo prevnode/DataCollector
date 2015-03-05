@@ -120,6 +120,7 @@ public class ClassificationService extends Service {
 
         public void sendData(double[] data){
             double[] local = data.clone();
+            _testInstance = new Instance(1, local);
         }
     }
 

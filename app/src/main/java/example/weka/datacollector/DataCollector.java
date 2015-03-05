@@ -79,14 +79,14 @@ public class DataCollector extends BroadcastReceiver {
 
         */
 
-        _testInstance = createInstance();
+        //_testInstance = createInstance();
         IBinder binder = peekService(appContext, new Intent(appContext, ClassificationService.class));
         ClassificationService.ClassificationBinder classificationBinder = (ClassificationService.ClassificationBinder)binder;
 
         if(classificationBinder != null){
             //classificationBinder.Tag();
             //classificationBinder.Classify(_testInstance);
-            classificationBinder.sendData(_testInstance.toDoubleArray());
+            classificationBinder.sendData(_arffInstance.toValues());
         }
     }
 
