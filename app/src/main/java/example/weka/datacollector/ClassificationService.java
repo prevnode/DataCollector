@@ -76,7 +76,6 @@ public class ClassificationService extends Service {
                 Log.e(TAG, "set Class Missing: " + e.toString());
             }
 
-
             if(_naiveBayes == null){
                 Log.e(TAG, "Classifier null");
                 return;
@@ -104,7 +103,6 @@ public class ClassificationService extends Service {
                     Log.e(TAG, "incompatible headers");
                     return;
                 }
-
 
                 Toast.makeText(getApplicationContext(),"Result: " + result, Toast.LENGTH_SHORT).show();
 
