@@ -555,7 +555,7 @@ public class Instance
    * attribute is nominal (or a string) then this is the new value's
    * index as a double).  
    * @throws UnassignedClassException if the class is not set
-   * @throws UnaddignedDatasetException if the instance doesn't
+   * @throws UnassignedDatasetException if the instance doesn't
    * have access to a dataset 
    */
   //@ requires classIndex() >= 0;
@@ -599,6 +599,9 @@ public class Instance
    * @param instances the reference to the dataset 
    */
   public final void setDataset(Instances instances) {
+    if(instances == null)
+        throw new NullPointerException("no instance to set");
+
     m_Dataset = instances;
   }
 

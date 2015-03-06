@@ -29,4 +29,5 @@ dependencies {
     compile files('C:/Users/lenovo/Documents/UW Bothell/499/DataCollector/lib/weka-3.6.6-android.jar')
     compile files('C:/Users/Research/DataCollector/lib/weka-3.6.6-android.jar')
     compile files('C:/Users/Research/DataCollector/lib/java-cup.jar')
+    compile files('C:/Users/lenovo/Documents/UW Bothell/499/DataCollector/lib/java-cup.jar')
 }

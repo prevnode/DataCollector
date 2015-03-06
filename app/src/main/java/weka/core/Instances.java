@@ -303,6 +303,9 @@ public class Instances
    */
   public void add(/*@non_null@*/ Instance instance) {
 
+    if(instance == null)
+        throw new NullPointerException("No instance to add");
+
     Instance newInstance = (Instance)instance.copy();
 
     newInstance.setDataset(this);

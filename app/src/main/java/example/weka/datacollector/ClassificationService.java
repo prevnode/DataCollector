@@ -47,6 +47,7 @@ public class ClassificationService extends Service {
             int numAttributes = testInstance.numAttributes();
             double values[] = new double[numAttributes];
 
+
             for(int i= 0; i < numAttributes; ++i )
             {
                 values[i] = testInstance.value(i);
@@ -58,10 +59,10 @@ public class ClassificationService extends Service {
 
             testSet.setRelationName("phone-weka.filters.supervised.attribute.Discretize-Rfirst-last");
 
-
+            String sampleTestInstance = testInstance.toString();
 
             try {
-                testSet.add((Instance)localTestInstance);
+                testSet.add(testInstance);
             }catch(Throwable t){
                 Log.e(TAG, "add: " + t.toString());
             }
@@ -121,6 +122,7 @@ public class ClassificationService extends Service {
         public void sendData(double[] data){
             double[] local = data.clone();
             _testInstance = new Instance(1, local);
+            Classify(_testInstance);
         }
     }
 

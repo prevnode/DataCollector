@@ -89,6 +89,7 @@
     <orderEntry type="library" exported="" name="weka-3.6.6-android" level="project" />
     <orderEntry type="library" exported="" name="1_weka-3.6.6-android" level="project" />
     <orderEntry type="library" exported="" name="java-cup" level="project" />
+    <orderEntry type="library" exported="" name="1_java-cup" level="project" />
     <orderEntry type="library" exported="" name="weka" level="project" />
     <orderEntry type="library" exported="" name="1_weka" level="project" />
     <orderEntry type="library" exported="" name="support-v4-21.0.3" level="project" />
