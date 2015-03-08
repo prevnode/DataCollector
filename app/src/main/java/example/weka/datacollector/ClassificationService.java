@@ -16,6 +16,7 @@ import java.io.InputStream;
 
 import weka.classifiers.bayes.NaiveBayes;
 import weka.classifiers.meta.FilteredClassifier;
+import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.SerializationHelper;
@@ -58,8 +59,6 @@ public class ClassificationService extends Service {
 
 
             testSet.setRelationName("phone-weka.filters.supervised.attribute.Discretize-Rfirst-last");
-
-            String sampleTestInstance = testInstance.toString();
 
             try {
                 testSet.add(testInstance);
