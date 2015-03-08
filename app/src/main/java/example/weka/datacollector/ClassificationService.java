@@ -134,17 +134,19 @@ public class ClassificationService extends Service {
     public void onCreate(){
         counter = 1;
 
+        /*
         if( LoadClassifierModel() )
             PrepareFilter();
         else
             Log.e(TAG, "Load failed");
+        */
 
-        /*
+
         if(PrepareFileReader() )
             TrainClassifier();
         else
             Log.e(TAG, "Unable to read training set");
-        */
+
 
 
     }
@@ -269,7 +271,7 @@ public class ClassificationService extends Service {
 
     private boolean PrepareFileReader(){
         File trainingSet = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "/arff/Training.arff" );
+                Environment.DIRECTORY_PICTURES), "/arff/Training2.arff" );
 
         try {
             _fileReader = new FileReader(trainingSet);
