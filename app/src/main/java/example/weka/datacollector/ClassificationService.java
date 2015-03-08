@@ -61,7 +61,7 @@ public class ClassificationService extends Service {
             testSet.setRelationName("phone-weka.filters.supervised.attribute.Discretize-Rfirst-last");
 
             try {
-                testSet.add(testInstance);
+                testSet.add(localTestInstance);
             }catch(Throwable t){
                 Log.e(TAG, "add: " + t.toString());
             }
@@ -134,18 +134,19 @@ public class ClassificationService extends Service {
     public void onCreate(){
         counter = 1;
 
-        /*
+
         if( LoadClassifierModel() )
             PrepareFilter();
         else
             Log.e(TAG, "Load failed");
-        */
 
 
+        /*
         if(PrepareFileReader() )
             TrainClassifier();
         else
             Log.e(TAG, "Unable to read training set");
+        */
 
 
 

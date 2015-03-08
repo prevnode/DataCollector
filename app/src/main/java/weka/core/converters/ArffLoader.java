@@ -1010,11 +1010,15 @@ public class ArffLoader
       getStructure();
     }
 
+    int count  =0;
     // Read all instances
     Instance inst;
     Instances insts = new Instances(m_structure, 0);
-    while ((inst = m_ArffReader.readInstance(m_structure)) != null)
-      insts.add(inst);
+    while ((inst = m_ArffReader.readInstance(m_structure)) != null){
+        insts.add(inst);
+        count++;
+    }
+
 
     // Instances readIn = new Instances(m_structure);
 
