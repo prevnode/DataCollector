@@ -27,7 +27,6 @@ public class ClassificationService extends Service {
 
     private Instance _testInstance;
     private Instances _testSet;
-    private ArrayDeque<Instance> _toBeClassified;
 
     public ClassificationService() {
     }
@@ -37,38 +36,25 @@ public class ClassificationService extends Service {
             return ClassificationService.this;
         }
 
-        public void Tag(){
-            Toast.makeText(getApplicationContext(),"count: " + counter, Toast.LENGTH_SHORT).show();
-            counter++;
-        }
-
-
-        public void Classify(Instance testInstance){
+        public void Classify(){
 
             if(_testSet.numInstances() > 0)
                 _testSet.delete();
 
-            Instance blankInstance = new Instance(19);
-            for(int i = 0; i < 19; ++i){
-                blankInstance.setValue(i,testInstance.value(i));
-            }
-
-
             try {
-                _testSet.add(blankInstance);
+                _testSet.add(_testInstance);
             }catch(Throwable t){
                 Log.e(TAG, "add: " + t.toString());
             }
 
             try{
-                blankInstance.setDataset(_testSet);
+                _testInstance.setDataset(_testSet);
             }catch(java.lang.ArrayIndexOutOfBoundsException e){
                 Log.e(TAG, "set dataset: " + e.toString() );
             }
 
-
             try {
-                blankInstance.setClassMissing();
+                _testInstance.setClassMissing();
             }catch(Exception e){
                 Log.e(TAG, "set Class Missing: " + e.toString());
             }
@@ -79,15 +65,6 @@ public class ClassificationService extends Service {
             }
 
             double result = -1;
-
-            /*
-            Instances filteredInstances = FilterDataSet(_testSet);
-            if(filteredInstances == null){
-                Log.e(TAG, "classify can't use null filtered dataset");
-                return;
-            }
-            */
-
 
             try {
                 int lastInstance = _testSet.numInstances() -1;
@@ -116,13 +93,18 @@ public class ClassificationService extends Service {
         }
 
         public void sendData(double[] data){
-            double[] local = data.clone();
-            _testInstance = new Instance(1, local);
-            _toBeClassified.add(_testInstance);
-            Classify(_testInstance);
+
+            ClassificationService.this._testInstance = new Instance(19);
+            for(int i = 0; i < 19; ++i){
+                _testInstance.setValue(i,data[i]);
+            }
+
+            Classify();
 
         }
     }
+
+
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
@@ -144,7 +126,7 @@ public class ClassificationService extends Service {
         _testSet = new Instances(_trainInstances);
         _testSet.delete();
         _testSet.setRelationName("phone-weka.filters.supervised.attribute.Discretize-Rfirst-last");
-        _toBeClassified = new ArrayDeque<>();
+
 
 
         /*
