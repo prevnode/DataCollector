@@ -16,11 +16,8 @@ import java.io.InputStream;
 import java.util.ArrayDeque;
 
 import weka.classifiers.bayes.NaiveBayes;
-import weka.classifiers.meta.FilteredClassifier;
-import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
-import weka.core.Queue;
 import weka.core.SerializationHelper;
 import weka.core.converters.ArffLoader;
 import weka.filters.Filter;
@@ -29,7 +26,7 @@ import weka.filters.supervised.attribute.Discretize;
 public class ClassificationService extends Service {
 
     private Instance _testInstance;
-    private Instances _testInstances;
+    private Instances _testSet;
     private ArrayDeque<Instance> _toBeClassified;
 
     public ClassificationService() {
@@ -48,19 +45,25 @@ public class ClassificationService extends Service {
 
         public void Classify(Instance testInstance){
 
-            if(_testInstances.numInstances() > 0)
-                _testInstances.delete();
+            if(_testSet.numInstances() > 0)
+                _testSet.delete();
+
+            Instances filteredInstances = FilterDataSet(_testSet);
+            if(filteredInstances == null){
+                Log.e(TAG, "classify can't use null filtered dataset");
+                return;
+            }
 
 
 
             try {
-                _testInstances.add(testInstance);
+                filteredInstances.add(testInstance);
             }catch(Throwable t){
                 Log.e(TAG, "add: " + t.toString());
             }
 
             try{
-                testInstance.setDataset(_testInstances);
+                testInstance.setDataset(filteredInstances);
             }catch(java.lang.ArrayIndexOutOfBoundsException e){
                 Log.e(TAG, "set dataset: " + e.toString() );
             }
@@ -79,11 +82,7 @@ public class ClassificationService extends Service {
 
             double result = -1;
 
-            Instances filteredInstances = FilterDataSet(testSet);
-            if(filteredInstances == null){
-                Log.e(TAG, "classify can't use null filtered dataset");
-                return;
-            }
+
 
 
             try {
@@ -138,9 +137,10 @@ public class ClassificationService extends Service {
 
 
         //Test set should have same header info as train set but no instances
-        _testInstances = new Instances(_trainInstances);
-        _testInstances.delete();
-        _testInstances.setRelationName("phone-weka.filters.supervised.attribute.Discretize-Rfirst-last");
+        _testSet = new Instances(_trainInstances);
+        _testSet.delete();
+        _testSet.setRelationName("phone-weka.filters.supervised.attribute.Discretize-Rfirst-last");
+        _toBeClassified = new ArrayDeque<>();
 
 
         /*
