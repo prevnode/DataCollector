@@ -112,6 +112,7 @@ public class ClassificationService extends Service {
                 //instances.instance(0).setClassValue(clsLabel);
 
             }catch(Exception e){
+                e.printStackTrace();
                 Log.e(TAG, "Classify: " + e.toString());
                 return;
             }
