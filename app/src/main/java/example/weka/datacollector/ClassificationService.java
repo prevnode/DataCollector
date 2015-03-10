@@ -80,19 +80,21 @@ public class ClassificationService extends Service {
 
             double result = -1;
 
+            /*
             Instances filteredInstances = FilterDataSet(_testSet);
             if(filteredInstances == null){
                 Log.e(TAG, "classify can't use null filtered dataset");
                 return;
             }
+            */
 
 
             try {
-                int lastInstance = filteredInstances.numInstances() -1;
+                int lastInstance = _testSet.numInstances() -1;
 
-                Instance toClassify = filteredInstances.instance(lastInstance);
+                Instance toClassify = _testSet.instance(lastInstance);
 
-                if(_trainInstances.equalHeaders(filteredInstances)) {
+                if(_trainInstances.equalHeaders(_testSet)) {
 
                     result = _naiveBayes.classifyInstance(toClassify);
                 }
@@ -196,7 +198,7 @@ public class ClassificationService extends Service {
     private boolean LoadClassifierModel(){
 
         File model = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "arff/NBTrainedONSet2.model");
+                Environment.DIRECTORY_PICTURES), "arff/UnFilteredNBTrainedSet2.model");
 
         InputStream inputStream;
         Object o[];
@@ -257,7 +259,6 @@ public class ClassificationService extends Service {
      */
     private Instances FilterDataSet(Instances toFilter){
         Instances filtered = null;
-        //String arff = toFilter.toString();
 
         boolean formatted = _discretize.isOutputFormatDefined();
 
