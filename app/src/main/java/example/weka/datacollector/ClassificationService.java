@@ -14,6 +14,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.InputStream;
 
+import weka.classifiers.Classifier;
 import weka.classifiers.bayes.NaiveBayes;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -58,7 +59,7 @@ public class ClassificationService extends Service {
                 Log.e(TAG, "set Class Missing: " + e.toString());
             }
 
-            if(_naiveBayes == null){
+            if(_classifier == null){
                 Log.e(TAG, "Classifier null");
                 return;
             }
@@ -72,14 +73,15 @@ public class ClassificationService extends Service {
 
                 if(_trainInstances.equalHeaders(_testSet)) {
 
-                    result = _naiveBayes.classifyInstance(toClassify);
+                    result = _classifier.classifyInstance(toClassify);
                 }
                 else{
                     Log.e(TAG, "incompatible headers");
                     return;
                 }
 
-                Toast.makeText(getApplicationContext(),"Result: " + result, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(),"Result: " +
+                       ( (result == 0) ? "Normal" : "Infected"), Toast.LENGTH_SHORT).show();
 
                 //instances.instance(0).setClassValue(clsLabel);
 
@@ -143,6 +145,7 @@ public class ClassificationService extends Service {
 
     private final IBinder _Binder = new ClassificationBinder();
     private NaiveBayes _naiveBayes = new NaiveBayes();
+    private Classifier _classifier;
     //private FilteredClassifier _filteredClassifier = null;
     private final String TAG = "ClassificationService";
     private Instances _trainInstances;
@@ -176,7 +179,7 @@ public class ClassificationService extends Service {
     private boolean LoadClassifierModel(){
 
         File model = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "arff/UnFilteredNBTrainedSet2.model");
+                Environment.DIRECTORY_PICTURES), "arff/SMOTrainedSet2.model");
 
         InputStream inputStream;
         Object o[];
@@ -195,10 +198,10 @@ public class ClassificationService extends Service {
             return false;
         }
 
-        _naiveBayes = (NaiveBayes)o[0];
+        _classifier = (Classifier)o[0];
         //_filteredClassifier = (FilteredClassifier)o[0];
 
-        if(_naiveBayes == null){
+        if(_classifier == null){
             Log.e(TAG, "Failed to load model classifier");
             return false;
         }

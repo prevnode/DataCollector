@@ -31,7 +31,7 @@ import weka.core.Instances;
  */
 public class DataCollector extends BroadcastReceiver {
 
-    private boolean _writeToFile = false;
+    private boolean _writeToFile = true;
     private final String TAG = "DataCollector";
     private IntentFilter _battFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
     private FileWriter _fileWriter;
@@ -64,26 +64,20 @@ public class DataCollector extends BroadcastReceiver {
         readMem();
         _arffInstance.Class = "?";
 
-        /*
         if(_writeToFile)
             writeToFile();
-        else{
-            _dataSet.add( createInstance() );
-            double classValue = ControlDataCollection.Classify(_dataSet);
-            _dataSet.instance(_dataSet.numInstances() -1).setClassValue(classValue);
-            Toast.makeText(context, "Classified as: " + classValue, Toast.LENGTH_SHORT).show();
-        }
+        else {
 
-        */
 
-        //_testInstance = createInstance();
-        IBinder binder = peekService(appContext, new Intent(appContext, ClassificationService.class));
-        ClassificationService.ClassificationBinder classificationBinder = (ClassificationService.ClassificationBinder)binder;
+            //_testInstance = createInstance();
+            IBinder binder = peekService(appContext, new Intent(appContext, ClassificationService.class));
+            ClassificationService.ClassificationBinder classificationBinder = (ClassificationService.ClassificationBinder) binder;
 
-        if(classificationBinder != null){
-            //classificationBinder.Tag();
-            //classificationBinder.Classify(_testInstance);
-            classificationBinder.sendData(_arffInstance.toValues());
+            if (classificationBinder != null) {
+                //classificationBinder.Tag();
+                //classificationBinder.Classify(_testInstance);
+                classificationBinder.sendData(_arffInstance.toValues());
+            }
         }
     }
 
