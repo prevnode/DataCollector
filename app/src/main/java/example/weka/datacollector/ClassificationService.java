@@ -13,7 +13,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.InputStream;
-import java.util.ArrayDeque;
 
 import weka.classifiers.bayes.NaiveBayes;
 import weka.core.Instance;
