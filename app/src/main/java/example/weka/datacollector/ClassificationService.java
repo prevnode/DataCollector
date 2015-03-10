@@ -48,29 +48,27 @@ public class ClassificationService extends Service {
             if(_testSet.numInstances() > 0)
                 _testSet.delete();
 
-            Instances filteredInstances = FilterDataSet(_testSet);
-            if(filteredInstances == null){
-                Log.e(TAG, "classify can't use null filtered dataset");
-                return;
+            Instance blankInstance = new Instance(19);
+            for(int i = 0; i < 19; ++i){
+                blankInstance.setValue(i,testInstance.value(i));
             }
 
 
-
             try {
-                filteredInstances.add(testInstance);
+                _testSet.add(blankInstance);
             }catch(Throwable t){
                 Log.e(TAG, "add: " + t.toString());
             }
 
             try{
-                testInstance.setDataset(filteredInstances);
+                blankInstance.setDataset(_testSet);
             }catch(java.lang.ArrayIndexOutOfBoundsException e){
                 Log.e(TAG, "set dataset: " + e.toString() );
             }
 
 
             try {
-                testInstance.setClassMissing();
+                blankInstance.setClassMissing();
             }catch(Exception e){
                 Log.e(TAG, "set Class Missing: " + e.toString());
             }
@@ -82,13 +80,17 @@ public class ClassificationService extends Service {
 
             double result = -1;
 
-
+            Instances filteredInstances = FilterDataSet(_testSet);
+            if(filteredInstances == null){
+                Log.e(TAG, "classify can't use null filtered dataset");
+                return;
+            }
 
 
             try {
-                int numberOfInstances = filteredInstances.numInstances() -1;
+                int lastInstance = filteredInstances.numInstances() -1;
 
-                Instance toClassify = filteredInstances.instance(numberOfInstances);
+                Instance toClassify = filteredInstances.instance(lastInstance);
 
                 if(_trainInstances.equalHeaders(filteredInstances)) {
 
@@ -149,9 +151,6 @@ public class ClassificationService extends Service {
         else
             Log.e(TAG, "Unable to read training set");
         */
-
-
-
     }
 
     @Override
