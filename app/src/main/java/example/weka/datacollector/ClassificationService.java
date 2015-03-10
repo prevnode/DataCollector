@@ -13,12 +13,14 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.InputStream;
+import java.util.ArrayDeque;
 
 import weka.classifiers.bayes.NaiveBayes;
 import weka.classifiers.meta.FilteredClassifier;
 import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.core.Queue;
 import weka.core.SerializationHelper;
 import weka.core.converters.ArffLoader;
 import weka.filters.Filter;
@@ -27,6 +29,8 @@ import weka.filters.supervised.attribute.Discretize;
 public class ClassificationService extends Service {
 
     private Instance _testInstance;
+    private Instances _testInstances;
+    private ArrayDeque<Instance> _toBeClassified;
 
     public ClassificationService() {
     }
@@ -41,33 +45,22 @@ public class ClassificationService extends Service {
             counter++;
         }
 
+
         public void Classify(Instance testInstance){
 
-            Instances testSet = new Instances(_trainInstances, 0, 0);
-            //Instances testSet = new Instances();
-            int numAttributes = testInstance.numAttributes();
-            double values[] = new double[numAttributes];
+            if(_testInstances.numInstances() > 0)
+                _testInstances.delete();
 
 
-            for(int i= 0; i < numAttributes; ++i )
-            {
-                values[i] = testInstance.value(i);
-            }
-
-            Instance localTestInstance = new Instance(1,values);
-
-
-
-            testSet.setRelationName("phone-weka.filters.supervised.attribute.Discretize-Rfirst-last");
 
             try {
-                testSet.add(localTestInstance);
+                _testInstances.add(testInstance);
             }catch(Throwable t){
                 Log.e(TAG, "add: " + t.toString());
             }
 
             try{
-                testInstance.setDataset(testSet);
+                testInstance.setDataset(_testInstances);
             }catch(java.lang.ArrayIndexOutOfBoundsException e){
                 Log.e(TAG, "set dataset: " + e.toString() );
             }
@@ -122,7 +115,9 @@ public class ClassificationService extends Service {
         public void sendData(double[] data){
             double[] local = data.clone();
             _testInstance = new Instance(1, local);
+            _toBeClassified.add(_testInstance);
             Classify(_testInstance);
+
         }
     }
 
@@ -140,6 +135,12 @@ public class ClassificationService extends Service {
             PrepareFilter();
         else
             Log.e(TAG, "Load failed");
+
+
+        //Test set should have same header info as train set but no instances
+        _testInstances = new Instances(_trainInstances);
+        _testInstances.delete();
+        _testInstances.setRelationName("phone-weka.filters.supervised.attribute.Discretize-Rfirst-last");
 
 
         /*
