@@ -35,7 +35,7 @@ public class ClassificationService extends Service {
             return ClassificationService.this;
         }
 
-        public void Classify(){
+        private void Classify(){
 
             if(_testSet.numInstances() > 0)
                 _testSet.delete();
@@ -99,7 +99,6 @@ public class ClassificationService extends Service {
             }
 
             Classify();
-
         }
     }
 
@@ -112,7 +111,7 @@ public class ClassificationService extends Service {
 
     @Override
     public void onCreate(){
-        counter = 1;
+        int counter = 1;
 
 
         if( LoadClassifierModel() )
@@ -143,11 +142,9 @@ public class ClassificationService extends Service {
     }
 
     private final IBinder _Binder = new ClassificationBinder();
-    private int counter;
     private NaiveBayes _naiveBayes = new NaiveBayes();
     //private FilteredClassifier _filteredClassifier = null;
     private final String TAG = "ClassificationService";
-    private FileReader _fileReader;
     private Instances _trainInstances;
     private Discretize _discretize;
 
@@ -258,7 +255,7 @@ public class ClassificationService extends Service {
                 Environment.DIRECTORY_PICTURES), "/arff/Training2.arff" );
 
         try {
-            _fileReader = new FileReader(trainingSet);
+            FileReader fileReader = new FileReader(trainingSet);
         }catch(Exception e){
             Log.e(TAG, "Prepare reader: " + e.toString());
             return false;

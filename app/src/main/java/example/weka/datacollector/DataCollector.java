@@ -32,10 +32,7 @@ import weka.core.Instances;
 public class DataCollector extends BroadcastReceiver {
 
     private boolean _writeToFile = false;
-    private final long BYTES_IN_MEG = 1048576L;
     private final String TAG = "DataCollector";
-    private boolean _fileReadyToWrite;
-    private File file;
     private IntentFilter _battFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
     private FileWriter _fileWriter;
     private ArffInstance _arffInstance = new ArffInstance();
@@ -98,9 +95,9 @@ public class DataCollector extends BroadcastReceiver {
     }
 
     private boolean writeToFile(){
-        _fileReadyToWrite = setupFileWriter();
+        boolean fileReadyToWrite = setupFileWriter();
 
-        if(!_fileReadyToWrite) {
+        if(!fileReadyToWrite) {
             Log.e(TAG, "File Not ready");
             return false;
         }
@@ -122,6 +119,7 @@ public class DataCollector extends BroadcastReceiver {
         ActivityManager activityManager = (ActivityManager)appContext.getSystemService(Context.ACTIVITY_SERVICE);
         activityManager.getMemoryInfo(mi);
 
+        long BYTES_IN_MEG = 1048576L;
         _arffInstance.Memory_Available = mi.availMem / BYTES_IN_MEG;
         _arffInstance.Memory_Percentage = (float)mi.availMem / (float)mi.totalMem;
     }
@@ -230,7 +228,7 @@ public class DataCollector extends BroadcastReceiver {
         }
 
         File dir = getDocumentsDir("arff");
-        file = new File(dir,"data.arff");
+        File file = new File(dir, "data.arff");
 
         try{
             _fileWriter = new FileWriter(file,true);
