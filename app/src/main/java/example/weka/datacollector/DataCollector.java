@@ -31,11 +31,8 @@ import weka.core.Instances;
  */
 public class DataCollector extends BroadcastReceiver {
 
-    private boolean _writeToFile = false;
-    private final long BYTES_IN_MEG = 1048576L;
+    private boolean _writeToFile = true;
     private final String TAG = "DataCollector";
-    private boolean _fileReadyToWrite;
-    private File file;
     private IntentFilter _battFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
     private FileWriter _fileWriter;
     private ArffInstance _arffInstance = new ArffInstance();
@@ -67,26 +64,20 @@ public class DataCollector extends BroadcastReceiver {
         readMem();
         _arffInstance.Class = "?";
 
-        /*
         if(_writeToFile)
             writeToFile();
-        else{
-            _dataSet.add( createInstance() );
-            double classValue = ControlDataCollection.Classify(_dataSet);
-            _dataSet.instance(_dataSet.numInstances() -1).setClassValue(classValue);
-            Toast.makeText(context, "Classified as: " + classValue, Toast.LENGTH_SHORT).show();
-        }
+        else {
 
-        */
 
-        //_testInstance = createInstance();
-        IBinder binder = peekService(appContext, new Intent(appContext, ClassificationService.class));
-        ClassificationService.ClassificationBinder classificationBinder = (ClassificationService.ClassificationBinder)binder;
+            //_testInstance = createInstance();
+            IBinder binder = peekService(appContext, new Intent(appContext, ClassificationService.class));
+            ClassificationService.ClassificationBinder classificationBinder = (ClassificationService.ClassificationBinder) binder;
 
-        if(classificationBinder != null){
-            //classificationBinder.Tag();
-            //classificationBinder.Classify(_testInstance);
-            classificationBinder.sendData(_arffInstance.toValues());
+            if (classificationBinder != null) {
+                //classificationBinder.Tag();
+                //classificationBinder.Classify(_testInstance);
+                classificationBinder.sendData(_arffInstance.toValues());
+            }
         }
     }
 
@@ -98,9 +89,9 @@ public class DataCollector extends BroadcastReceiver {
     }
 
     private boolean writeToFile(){
-        _fileReadyToWrite = setupFileWriter();
+        boolean fileReadyToWrite = setupFileWriter();
 
-        if(!_fileReadyToWrite) {
+        if(!fileReadyToWrite) {
             Log.e(TAG, "File Not ready");
             return false;
         }
@@ -122,6 +113,7 @@ public class DataCollector extends BroadcastReceiver {
         ActivityManager activityManager = (ActivityManager)appContext.getSystemService(Context.ACTIVITY_SERVICE);
         activityManager.getMemoryInfo(mi);
 
+        long BYTES_IN_MEG = 1048576L;
         _arffInstance.Memory_Available = mi.availMem / BYTES_IN_MEG;
         _arffInstance.Memory_Percentage = (float)mi.availMem / (float)mi.totalMem;
     }
@@ -230,7 +222,7 @@ public class DataCollector extends BroadcastReceiver {
         }
 
         File dir = getDocumentsDir("arff");
-        file = new File(dir,"data.arff");
+        File file = new File(dir, "data.arff");
 
         try{
             _fileWriter = new FileWriter(file,true);

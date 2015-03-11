@@ -22,6 +22,8 @@
 
 package weka.core;
 
+import android.util.Log;
+
 import java.io.Serializable;
 import java.util.Enumeration;
 
@@ -923,27 +925,33 @@ public class Instance
   public final /*@pure@*/ String toString(int attIndex) {
 
    StringBuffer text = new StringBuffer();
-   
-   if (isMissing(attIndex)) {
-     text.append("?");
-   } else {
-     if (m_Dataset == null) {
-       text.append(Utils.doubleToString(m_AttValues[attIndex],6));
-     } else {
-       switch (m_Dataset.attribute(attIndex).type()) {
-       case Attribute.NOMINAL:
-       case Attribute.STRING:
-       case Attribute.DATE:
-       case Attribute.RELATIONAL:
-         text.append(Utils.quote(stringValue(attIndex)));
-         break;
-       case Attribute.NUMERIC:
-	 text.append(Utils.doubleToString(value(attIndex),6));
-         break;
-       default:
-         throw new IllegalStateException("Unknown attribute type");
+
+   try {
+
+       if (isMissing(attIndex)) {
+           text.append("?");
+       } else {
+           if (m_Dataset == null) {
+               text.append(Utils.doubleToString(m_AttValues[attIndex], 6));
+           } else {
+               switch (m_Dataset.attribute(attIndex).type()) {
+                   case Attribute.NOMINAL:
+                   case Attribute.STRING:
+                   case Attribute.DATE:
+                   case Attribute.RELATIONAL:
+                       text.append(Utils.quote(stringValue(attIndex)));
+                       break;
+                   case Attribute.NUMERIC:
+                       text.append(Utils.doubleToString(value(attIndex), 6));
+                       break;
+                   default:
+                       throw new IllegalStateException("Unknown attribute type");
+               }
+           }
        }
-     }
+
+   }catch (Throwable t){
+       Log.e("Instance", t.toString());
    }
    return text.toString();
   }

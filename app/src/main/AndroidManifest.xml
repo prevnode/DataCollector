@@ -19,12 +19,6 @@
             </intent-filter>
         </activity>
 
-        <service
-            android:name=".DataCollectorService"
-            android:enabled="true"
-            android:exported="true" >
-        </service>
-
         <receiver
             android:name=".DataCollector"
             android:enabled="true"

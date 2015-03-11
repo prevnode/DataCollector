@@ -15,7 +15,7 @@ public final class InstanceGenerator {
     private final Instances _emptyInstances;
 
     public InstanceGenerator(){
-        _attributes = new FastVector();
+        FastVector _attributes = new FastVector();
         _attributes.addElement(new Attribute("Batt_Voltage", 0));
         //_attributes.addElement(new Attribute("Batt_Current", 1));
         _attributes.addElement(new Attribute("Batt_Temp", 1));
@@ -55,8 +55,6 @@ public final class InstanceGenerator {
         _emptyInstances.setClassIndex(_emptyInstances.numAttributes() -1);
     }
 
-
-    private FastVector _attributes;
 
     public Instances getEmptyInstances(){
 

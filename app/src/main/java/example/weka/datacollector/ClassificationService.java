@@ -14,9 +14,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.InputStream;
 
+import weka.classifiers.Classifier;
 import weka.classifiers.bayes.NaiveBayes;
-import weka.classifiers.meta.FilteredClassifier;
-import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.SerializationHelper;
@@ -27,6 +26,7 @@ import weka.filters.supervised.attribute.Discretize;
 public class ClassificationService extends Service {
 
     private Instance _testInstance;
+    private Instances _testSet;
 
     public ClassificationService() {
     }
@@ -36,78 +36,52 @@ public class ClassificationService extends Service {
             return ClassificationService.this;
         }
 
-        public void Tag(){
-            Toast.makeText(getApplicationContext(),"count: " + counter, Toast.LENGTH_SHORT).show();
-            counter++;
-        }
+        private void Classify(){
 
-        public void Classify(Instance testInstance){
-
-            Instances testSet = new Instances(_trainInstances, 0, 0);
-            //Instances testSet = new Instances();
-            int numAttributes = testInstance.numAttributes();
-            double values[] = new double[numAttributes];
-
-
-            for(int i= 0; i < numAttributes; ++i )
-            {
-                values[i] = testInstance.value(i);
-            }
-
-            Instance localTestInstance = new Instance(1,values);
-
-
-
-            testSet.setRelationName("phone-weka.filters.supervised.attribute.Discretize-Rfirst-last");
+            if(_testSet.numInstances() > 0)
+                _testSet.delete();
 
             try {
-                testSet.add(localTestInstance);
+                _testSet.add(_testInstance);
             }catch(Throwable t){
                 Log.e(TAG, "add: " + t.toString());
             }
 
             try{
-                testInstance.setDataset(testSet);
+                _testInstance.setDataset(_testSet);
             }catch(java.lang.ArrayIndexOutOfBoundsException e){
                 Log.e(TAG, "set dataset: " + e.toString() );
             }
 
-
             try {
-                testInstance.setClassMissing();
+                _testInstance.setClassMissing();
             }catch(Exception e){
                 Log.e(TAG, "set Class Missing: " + e.toString());
             }
 
-            if(_naiveBayes == null){
+            if(_classifier == null){
                 Log.e(TAG, "Classifier null");
                 return;
             }
 
             double result = -1;
 
-            Instances filteredInstances = FilterDataSet(testSet);
-            if(filteredInstances == null){
-                Log.e(TAG, "classify can't use null filtered dataset");
-                return;
-            }
-
-
             try {
-                int numberOfInstances = filteredInstances.numInstances() -1;
+                int lastInstance = _testSet.numInstances() -1;
 
-                Instance toClassify = filteredInstances.instance(numberOfInstances);
+                Instance toClassify = _testSet.instance(lastInstance);
 
-                if(_trainInstances.equalHeaders(filteredInstances)) {
+                if(_trainInstances.equalHeaders(_testSet)) {
 
-                    result = _naiveBayes.classifyInstance(toClassify);
+                    result = _classifier.classifyInstance(toClassify);
                 }
                 else{
                     Log.e(TAG, "incompatible headers");
                     return;
                 }
 
-                Toast.makeText(getApplicationContext(),"Result: " + result, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(),"Result: " +
+                       ( (result == 0) ? "Normal" : "Infected"), Toast.LENGTH_SHORT).show();
 
                 //instances.instance(0).setClassValue(clsLabel);
 
@@ -120,11 +94,17 @@ public class ClassificationService extends Service {
         }
 
         public void sendData(double[] data){
-            double[] local = data.clone();
-            _testInstance = new Instance(1, local);
-            Classify(_testInstance);
+
+            ClassificationService.this._testInstance = new Instance(19);
+            for(int i = 0; i < 19; ++i){
+                _testInstance.setValue(i,data[i]);
+            }
+
+            Classify();
         }
     }
+
+
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
@@ -133,7 +113,7 @@ public class ClassificationService extends Service {
 
     @Override
     public void onCreate(){
-        counter = 1;
+        int counter = 1;
 
 
         if( LoadClassifierModel() )
@@ -142,15 +122,19 @@ public class ClassificationService extends Service {
             Log.e(TAG, "Load failed");
 
 
+        //Test set should have same header info as train set but no instances
+        _testSet = new Instances(_trainInstances);
+        _testSet.delete();
+        _testSet.setRelationName("phone-weka.filters.supervised.attribute.Discretize-Rfirst-last");
+
+
+
         /*
         if(PrepareFileReader() )
             TrainClassifier();
         else
             Log.e(TAG, "Unable to read training set");
         */
-
-
-
     }
 
     @Override
@@ -160,11 +144,10 @@ public class ClassificationService extends Service {
     }
 
     private final IBinder _Binder = new ClassificationBinder();
-    private int counter;
     private NaiveBayes _naiveBayes = new NaiveBayes();
+    private Classifier _classifier;
     //private FilteredClassifier _filteredClassifier = null;
     private final String TAG = "ClassificationService";
-    private FileReader _fileReader;
     private Instances _trainInstances;
     private Discretize _discretize;
 
@@ -196,7 +179,7 @@ public class ClassificationService extends Service {
     private boolean LoadClassifierModel(){
 
         File model = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "arff/NBTrainedONSet2.model");
+                Environment.DIRECTORY_PICTURES), "arff/SMOTrainedSet2.model");
 
         InputStream inputStream;
         Object o[];
@@ -215,10 +198,10 @@ public class ClassificationService extends Service {
             return false;
         }
 
-        _naiveBayes = (NaiveBayes)o[0];
+        _classifier = (Classifier)o[0];
         //_filteredClassifier = (FilteredClassifier)o[0];
 
-        if(_naiveBayes == null){
+        if(_classifier == null){
             Log.e(TAG, "Failed to load model classifier");
             return false;
         }
@@ -257,7 +240,6 @@ public class ClassificationService extends Service {
      */
     private Instances FilterDataSet(Instances toFilter){
         Instances filtered = null;
-        //String arff = toFilter.toString();
 
         boolean formatted = _discretize.isOutputFormatDefined();
 
@@ -276,7 +258,7 @@ public class ClassificationService extends Service {
                 Environment.DIRECTORY_PICTURES), "/arff/Training2.arff" );
 
         try {
-            _fileReader = new FileReader(trainingSet);
+            FileReader fileReader = new FileReader(trainingSet);
         }catch(Exception e){
             Log.e(TAG, "Prepare reader: " + e.toString());
             return false;
