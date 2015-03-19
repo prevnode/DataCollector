@@ -67,27 +67,6 @@ public class ControlDataCollection extends ActionBarActivity{
         Toast.makeText(this, "Alarm Canceled", Toast.LENGTH_SHORT).show();
     }
 
-    /**
-     * Start/Stop mRecording accelerometer readings
-     */
-    public void toggleRecord(View view){
-
-        if(_startButton == null){
-            Log.d(TAG,"no button ref");
-            return;
-        }
-
-        if(mRecording)
-            _startButton.setText("Start");
-        else
-            _startButton.setText("Stop");
-
-        mRecording = !mRecording;
-
-        //mBoundService.setActive(mRecording);
-    }
-
-
     private ClassificationService mBoundService;
 
 
