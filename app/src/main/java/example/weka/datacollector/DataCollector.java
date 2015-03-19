@@ -64,28 +64,19 @@ public class DataCollector extends BroadcastReceiver {
         readMem();
         _arffInstance.Class = "?";
 
+        //Hard coded whether to write data to disk or pass to classification service for
+        //real time. Should probably add a button for this to the UI
         if(_writeToFile)
             writeToFile();
         else {
 
-
-            //_testInstance = createInstance();
             IBinder binder = peekService(appContext, new Intent(appContext, ClassificationService.class));
             ClassificationService.ClassificationBinder classificationBinder = (ClassificationService.ClassificationBinder) binder;
 
             if (classificationBinder != null) {
-                //classificationBinder.Tag();
-                //classificationBinder.Classify(_testInstance);
                 classificationBinder.sendData(_arffInstance.toValues());
             }
         }
-    }
-
-    private Instance createInstance(){
-        Instance in;
-        double values[] = _arffInstance.toValues();
-        in = new Instance(1, values);
-        return in;
     }
 
     private boolean writeToFile(){
@@ -146,6 +137,10 @@ public class DataCollector extends BroadcastReceiver {
         _arffInstance.Total_Entities = Integer.parseInt(tokens[1]);
     }
 
+    /**
+     * Collects data about the network load. Several TrafficStats methods return monototic results
+     * hence all the subtraction of previous readings
+     */
     private void readNetwork(){
 
         long txTotalPackets = TrafficStats.getTotalTxPackets();
@@ -232,6 +227,13 @@ public class DataCollector extends BroadcastReceiver {
         return true;
     }
 
+    /**
+     * Tells Android to update the filesystem presented to computers connected via USB
+     * Turns out you only need this if you want to read the arff as it is being written.
+     * When you un/re plug in the USB this happens automatically
+     * @param file
+     * @param context
+     */
     private void scanDataFile(File file, Context context) {
         MediaScannerConnection.scanFile(appContext, new String[]{file.toString()}, null, new MediaScannerConnection.OnScanCompletedListener() {
                     public void onScanCompleted(String path, Uri uri) {Log.i("ExternalStorage", "Scanned " + path + ":");
