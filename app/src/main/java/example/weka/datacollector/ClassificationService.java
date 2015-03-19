@@ -38,6 +38,7 @@ public class ClassificationService extends Service {
 
         private void Classify(){
 
+            //The testSet should have header info but no instances
             if(_testSet.numInstances() > 0)
                 _testSet.delete();
 
@@ -113,8 +114,6 @@ public class ClassificationService extends Service {
 
     @Override
     public void onCreate(){
-        int counter = 1;
-
 
         if( LoadClassifierModel() )
             PrepareFilter();
@@ -127,14 +126,6 @@ public class ClassificationService extends Service {
         _testSet.delete();
         _testSet.setRelationName("phone-weka.filters.supervised.attribute.Discretize-Rfirst-last");
 
-
-
-        /*
-        if(PrepareFileReader() )
-            TrainClassifier();
-        else
-            Log.e(TAG, "Unable to read training set");
-        */
     }
 
     @Override
@@ -144,13 +135,21 @@ public class ClassificationService extends Service {
     }
 
     private final IBinder _Binder = new ClassificationBinder();
-    private NaiveBayes _naiveBayes = new NaiveBayes();
-    private Classifier _classifier;
-    //private FilteredClassifier _filteredClassifier = null;
-    private final String TAG = "ClassificationService";
-    private Instances _trainInstances;
-    private Discretize _discretize;
 
+    private Classifier _classifier;
+
+    private final String TAG = "ClassificationService";  //Used for debugging log
+    private Instances _trainInstances;
+
+    private Discretize _discretize;                      //Not currently used
+
+    //private FilteredClassifier _filteredClassifier = null;
+    //private NaiveBayes _naiveBayes = new NaiveBayes();
+
+    /**
+     * Used to load a training data set stored as an arff on the phone to be used on a
+     * classifier. You don't need this if you are loading a pre-trained classifier.
+     */
     private void TrainClassifier(){
 
         try {
@@ -165,7 +164,7 @@ public class ClassificationService extends Service {
 
             trainInstances.setClassIndex(trainInstances.numAttributes() - 1);
 
-            _naiveBayes.buildClassifier(trainInstances);
+            //_naiveBayes.buildClassifier(trainInstances);
             //_filteredClassifier.buildClassifier(trainInstances);
 
         }catch(Exception e){
@@ -176,6 +175,10 @@ public class ClassificationService extends Service {
 
     }
 
+    /**
+     * Loads pretrained classifier from disk
+     * @return
+     */
     private boolean LoadClassifierModel(){
 
         File model = new File(Environment.getExternalStoragePublicDirectory(
