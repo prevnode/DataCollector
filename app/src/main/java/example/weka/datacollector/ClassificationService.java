@@ -25,9 +25,6 @@ import weka.filters.supervised.attribute.Discretize;
 
 public class ClassificationService extends Service {
 
-    private Instance _testInstance;
-    private Instances _testSet;
-
     public ClassificationService() {
     }
 
@@ -94,6 +91,10 @@ public class ClassificationService extends Service {
 
         }
 
+        /**
+         * Hands data from the binder to the Service
+         * @param data
+         */
         public void sendData(double[] data){
 
             ClassificationService.this._testInstance = new Instance(19);
@@ -133,6 +134,9 @@ public class ClassificationService extends Service {
         // TODO: Return the communication channel to the service.
         return _Binder;
     }
+
+    private Instance _testInstance;
+    private Instances _testSet;
 
     private final IBinder _Binder = new ClassificationBinder();
 
@@ -219,6 +223,10 @@ public class ClassificationService extends Service {
         return true;
     }
 
+    /**
+     * Used to setup filter. Current options and filter type are from a particular
+     * model created in WEKA GUI. Should change to fit future needs.
+     */
     private void PrepareFilter(){
         _discretize = new Discretize();
         String[] options = new String[2];
@@ -256,6 +264,10 @@ public class ClassificationService extends Service {
     }
 
 
+    /**
+     * Point file reader at arff if it exists
+     * @return true if file located
+     */
     private boolean PrepareFileReader(){
         File trainingSet = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), "/arff/Training2.arff" );

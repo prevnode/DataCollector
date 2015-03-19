@@ -5,40 +5,23 @@ import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Debug;
-import android.os.Environment;
 import android.os.IBinder;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.content.ServiceConnection;
 import android.widget.Toast;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
-
-import weka.classifiers.bayes.NaiveBayes;
-import weka.classifiers.trees.J48;
-import weka.core.Instance;
-import weka.core.Instances;
-import weka.core.converters.ArffLoader;
-
 //Used for loading pre trained models
-import weka.classifiers.Classifier;
-import weka.core.SerializationHelper;
-import weka.filters.Filter;
-import weka.filters.supervised.attribute.Discretize;
+
 
 public class ControlDataCollection extends ActionBarActivity{
 
     private boolean mRecording;
 
-    private Button startButton;
     private boolean mIsBound;
     private PendingIntent pendingIntent;
     private static final String TAG = "ControlCollection";
@@ -89,15 +72,15 @@ public class ControlDataCollection extends ActionBarActivity{
      */
     public void toggleRecord(View view){
 
-        if(startButton == null){
+        if(_startButton == null){
             Log.d(TAG,"no button ref");
             return;
         }
 
         if(mRecording)
-            startButton.setText("Start");
+            _startButton.setText("Start");
         else
-            startButton.setText("Stop");
+            _startButton.setText("Stop");
 
         mRecording = !mRecording;
 
