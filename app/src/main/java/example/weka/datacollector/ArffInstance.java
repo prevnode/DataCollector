@@ -42,8 +42,8 @@ public class ArffInstance {
         //rtn[1] = Batt_Current;  Not available in api16
         rtn[1] = Batt_Temp;
         rtn[2] = Batt_Percent_Level;
-        rtn[3] = Local_RX_Packet_Delta;
 
+        rtn[3] = Local_RX_Packet_Delta;
         rtn[4] = Local_TX_Byte_Delta;
         rtn[5] = Local_RX_Packet_Delta;
         rtn[6] = Local_RX_Byte_Delta;
